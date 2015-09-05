@@ -1,0 +1,5 @@
+gflags (2.0-0ubuntu1) precise; urgency=low
+
+  * Initial release.
+
+ -- Marius Zwicker <marius@mlba-team.de>  Sun, 12 Aug 2012 18:30:00 +0200
