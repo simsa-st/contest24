@@ -1,0 +1,27 @@
+Source: gflags
+Priority: optional
+Section: devel
+Maintainer: Marius Zwicker <marius@mlba-team.de>
+Build-Depends: debhelper (>= 7.0.50~), quilt (>= 0.46-7~), cmake,
+ libc6, libgcc1
+Standards-Version: 3.9.1
+Vcs-Svn: http://gflags.googlecode.com/svn/trunk/
+Vcs-Browser: http://code.google.com/p/gflags/source/browse/
+Homepage: http://code.google.com/p/gflags/
+
+Package: libgflags-dev
+Section: libdevel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Google's Commandline flags module for C++
+ The gflags package contains a library that implements commandline flags 
+ processing. As such it's a replacement for getopt(). It has increased 
+ flexibility, including built-in support for C++ types like string, and
+ the ability to define flags in the source file in which they're used.
+
+Package: gflags-doc
+Section: universe/doc
+Architecture: all
+Depends: libgflags-dev (= ${binary:Version})
+Description: Google's Commandline flags module for C++
+ Documentation files for the gflags api
