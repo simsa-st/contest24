@@ -1,3 +1,12 @@
+# Build files
+build/*
+
+# Vim temp files
+*.swp
+
+# vim you complete me config file compiled
+.ycm_extra_conf.pyc
+
 # Compiled Object files
 *.slo
 *.lo
