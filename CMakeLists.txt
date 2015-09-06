@@ -21,3 +21,4 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # add subfolders
 # --------------
 add_subdirectory(c24)
+add_subdirectory(examples)
