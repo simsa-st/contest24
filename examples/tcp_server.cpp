@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include <gflags/gflags.h>
+#include <glog/logging.h>
 #include "c24/communication/stream.h"
 #include "c24/communication/stream_tcp_server.h"
 #include "c24/communication/stream_backend_interface.h"
