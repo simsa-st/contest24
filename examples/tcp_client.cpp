@@ -2,8 +2,8 @@
 // one message and receives one message.
 
 #include <memory>
-
 #include <iostream>
+
 #include <glog/logging.h>
 #include <gflags/gflags.h>
 #include "c24/communication/stream.h"

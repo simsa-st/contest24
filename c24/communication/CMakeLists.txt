@@ -4,10 +4,12 @@ set(${PROJECT_NAME}_headers
   stream_backend_interface.h
   stream_tcp.h
   stream_tcp_client.h
+  stream_tcp_server.h
   stream.h)
 set(${PROJECT_NAME}_sources
   stream_tcp.cpp
   stream_tcp_client.cpp
+  stream_tcp_server.cpp
   stream.cpp)
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_headers} ${${PROJECT_NAME}_sources})
