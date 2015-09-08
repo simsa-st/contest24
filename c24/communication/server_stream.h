@@ -106,4 +106,4 @@ class ServerStream {
 
 }  // namespace communication
 }  // namespace c24
-#endif //  COMMUNICATION_SERVER_STREAM_H_
+#endif  // COMMUNICATION_SERVER_STREAM_H_
