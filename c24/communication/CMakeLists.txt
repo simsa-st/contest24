@@ -1,12 +1,14 @@
 project(communication)
 
 set(${PROJECT_NAME}_headers
+  server_stream.h
   stream_backend_interface.h
   stream_tcp.h
   stream_tcp_client.h
   stream_tcp_server.h
   stream.h)
 set(${PROJECT_NAME}_sources
+  server_stream.cpp
   stream_tcp.cpp
   stream_tcp_client.cpp
   stream_tcp_server.cpp
