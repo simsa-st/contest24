@@ -2,7 +2,9 @@
 #define COMMUNICATION_STREAM_H_
 
 #include <memory>
+#include <sstream>
 #include <string>
+#include <vector>
 
 #include "c24/communication/stream_backend_interface.h"
 
@@ -39,9 +41,33 @@ class Stream {
   // (without newline) was received.
   bool SendMessageWithCheck(const std::string& msg, bool newline = true,
                             const char* expected = "OK") const;
+
+  // Receive a message and extract "cnt" variables of type T from it using
+  // stringstream. Also return rest of the message in the second argument if it
+  // is not nullptr.
+  template <typename T>
+  std::vector<T> GetVectorOf(int cnt, std::string* rest_of_msg);
+
  private:
   std::unique_ptr<StreamBackendInterface> stream_backend_;
 };
+
+// Implementation needs to be in the header file because of the template.
+template <typename T>
+std::vector<T> Stream::GetVectorOf(int cnt, std::string* rest_of_msg) {
+  std::string msg = GetMessage();
+  std::stringstream sstream(msg);
+  std::vector<T> vector_of;
+  for (int i = 0; i < cnt; ++i) {
+    T val;
+    sstream >> val;
+    vector_of.push_back(val);
+  }
+  if (rest_of_msg != nullptr) {
+    *rest_of_msg = sstream.str();
+  }
+  return vector_of;
+}
 
 }  // namespace communication
 }  // namespace c24
