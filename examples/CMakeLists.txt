@@ -26,3 +26,7 @@ target_link_libraries(${tcp_server} gflags)
 
 include_directories(${CMAKE_SOURCE_DIR}/c24/extern/google-glog-master/src/)
 target_link_libraries(${tcp_server} google-glog)
+
+# add subfolders
+# --------------
+add_subdirectory(candy_eaters)
