@@ -112,7 +112,7 @@ else()
 		${GFLAGS_INCLUDE_DIRS}
 	)
 
-	mz_add_definition(NO_THREADS)
+  # mz_add_definition(NO_THREADS)
 	set(GLOG_3LIBS pthread)
         if( HAVE_LIB_UNWIND )
             set(GLOG_3LIBS ${GLOG_3LIBS} unwind)
