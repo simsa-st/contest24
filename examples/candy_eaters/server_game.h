@@ -12,8 +12,10 @@
 #include "server_objects.h"
 using namespace std;
 
-#define BOARD_SIZE 2
-#define TURN_LENGTH_MICROS 5000000
+#define BOARD_SIZE 5
+#define TURN_LENGTH_MICROS 1000000
+#define NUM_TURNS 5000
+#define WINDOW_SIZE 400
 
 // Server for Candy Eaters game. Communicates with all the players, replies to
 // their queries and manages the state of the game.
@@ -23,6 +25,7 @@ class ServerGame {
       : ServerGame(ports, BOARD_SIZE, TURN_LENGTH_MICROS) {}
   ServerGame(vector<int> ports, int board_size, int turn_length_micros);
   void Run();
+  void RunWithVisualizer();
  private:
   // Start listening for tcp connections at given ports.
   void ListenForPlayers(const vector<int>& ports);

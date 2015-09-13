@@ -1,9 +1,9 @@
 #ifndef OBJECTS_POS_H_
 #define OBJECTS_POS_H_
 
-// TODO(simsa-st): Do a class from this, that is itterable (for (dir : dirs))
-// and provides functions such as OppositeDir(), Letter() ('U'), Word() ('UP'),
-// etc.
+// TODO(simsa-st): Do a class from this, that is itterable
+// (for (auto dir : dirs)) and provides functions such as OppositeDir(),
+// Letter() ('U'), Word() ('UP'), sf::Keyboard::Up, etc.
 namespace direction {
 extern int shift[4][2];
 extern char letter[4];
@@ -16,10 +16,10 @@ class Pos {
   Pos move(int dir) {
     return Pos(x_ + direction::shift[dir][0], y_ + direction::shift[dir][1]);
   }
-  int x() { return x_; }
-  int y() { return y_; }
+  int x() const { return x_; }
+  int y() const { return y_; }
 
- private:
+ protected:
   int x_;
   int y_;
 };

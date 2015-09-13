@@ -18,20 +18,54 @@ ServerGame::ServerGame(vector<int> ports, int board_size,
       turn_length_micros_(turn_length_micros),
       board_(board_size) {
   num_players_ = ports.size();
+
+  for (int i = 0; i < board_size; ++i) {
+    for (int j = 0; j < board_size; ++j) {
+      board_[Pos(i, j)].num_candies = rand() % 5;
+      board_[Pos(i, j)].vis_players = vector<bool>(num_players_, false);
+    }
+  }
+
   for (int i = 0; i < num_players_; ++i) {
     Pos random_pos(rand() % board_size_, rand() % board_size_);
     player_.push_back(random_pos);
+    board_[random_pos].vis_players[i] = true;
   }
+
   ListenForPlayers(ports);
 }
 
 void ServerGame::Run() {
-  while (true) {
+  while (current_turn_ < NUM_TURNS) {
     if (TimeForNewTurn()) {
       NewTurn();
     }
     ProcessCommands();
   }
+}
+
+void ServerGame::RunWithVisualizer() {
+  sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "My window");
+
+  std::thread game([this] { this->Run(); });
+  while (window.isOpen()) {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+      if (event.type == sf::Event::Closed) {
+        window.close();
+      }
+    }
+    window.clear(sf::Color::Black);
+    Board<ServerCell> board_for_drawing = board_;
+    double cell_size = static_cast<double>(WINDOW_SIZE) / board_size_;
+    board_for_drawing.setScale(cell_size, cell_size);
+    window.draw(board_for_drawing);
+    window.display();
+  }
+  // while (program_loop alive) {
+  //   handle commands
+  // }
+  game.join();
 }
 
 void ServerGame::ListenForPlayers(const vector<int>& ports) {
@@ -53,6 +87,10 @@ void ServerGame::NewTurn() {
     ProcessMoves();
     ++current_turn_;
     LOG(INFO) << "Changed turn to " << current_turn_;
+    if (rand() % (num_players_ + 1) != 0) {
+      Pos pos(rand() % board_size_, rand() % board_size_);
+      ++board_[pos].num_candies;
+    }
     last_turn_time_ = chrono::system_clock::now();
     SendOkToWaiting();
 }
@@ -85,7 +123,9 @@ void ServerGame::ProcessMoveEatCandy(int pid) {
 }
 void ServerGame::ProcessMoveMove(int pid) {
   CHECK_EQ(player_[pid].move.get_move_type(), ServerMove::MoveType::kMove);
+  board_[player_[pid].player.pos].vis_players[pid] = false;
   player_[pid].player.pos = player_[pid].move.get_move_to_pos();
+  board_[player_[pid].player.pos].vis_players[pid] = true;
 }
 
 void ServerGame::SendOkToWaiting() {
