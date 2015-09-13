@@ -13,6 +13,7 @@ DEFINE_string(ports, "",
               "--ports=5500,6000,6500");
 DEFINE_int32(seed, -1,
              "Seed used in srand. If negative (default), time(NULL) is used.");
+DEFINE_bool(vis, false, "Start with visualizer.");
 
 int main(int argc, char** argv) {
   google::InitGoogleLogging(*argv);
@@ -31,6 +32,10 @@ int main(int argc, char** argv) {
   }
 
   ServerGame game(ports);
-  game.Run();
+  if (!FLAGS_vis) {
+    game.Run();
+  } else {
+    game.RunWithVisualizer();
+  }
   return 0;
 }
