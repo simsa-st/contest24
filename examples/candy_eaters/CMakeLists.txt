@@ -22,11 +22,11 @@ set(${solution}_sources
 add_executable(${solution} ${${solution}_sources})
 target_link_libraries(${solution} communication)
 
-include_directories(${CMAKE_SOURCE_DIR}/c24/extern/gfags-master/src/)
+find_package(gflags REQUIRED)
 target_link_libraries(${solution} gflags)
 
-include_directories(${CMAKE_SOURCE_DIR}/c24/extern/google-glog-master/src/)
-target_link_libraries(${solution} google-glog)
+find_package(glog REQUIRED)
+target_link_libraries(${solution} glog)
 
 # Detect and add SFML
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
@@ -60,11 +60,11 @@ set(${server}_sources
 add_executable(${server} ${${server}_sources})
 target_link_libraries(${server} communication)
 
-include_directories(${CMAKE_SOURCE_DIR}/c24/extern/gfags-master/src/)
+find_package(gflags REQUIRED)
 target_link_libraries(${server} gflags)
 
-include_directories(${CMAKE_SOURCE_DIR}/c24/extern/google-glog-master/src/)
-target_link_libraries(${server} google-glog)
+find_package(glog REQUIRED)
+target_link_libraries(${server} glog)
 if(SFML_FOUND)
   include_directories(${SFML_INCLUDE_DIR})
   target_link_libraries(${server} ${SFML_LIBRARIES})
