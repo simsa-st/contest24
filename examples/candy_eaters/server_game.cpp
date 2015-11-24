@@ -41,6 +41,10 @@ void ServerGame::Run() {
       NewTurn();
     }
     ProcessCommands();
+    // TODO(simsa.st): Correct solution would be to signal when new message was
+    // received, connection established or new turn occured. But this works well
+    // enough and it is much easier.
+    std::this_thread::sleep_for(chrono::microseconds(10));
   }
 }
 
