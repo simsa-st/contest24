@@ -20,13 +20,22 @@ using namespace std;
 class Game {
  public:
   Game(const string& host, int port);
-  void Run();
+  void Run(bool visualizer, bool toolbar);
 
-  void RunWithVisualizer();
  private:
+  // Run the actual logic of the program.
+  void RunGame();
+
+  // Init visualizer window.
+  void InitVisualizer();
+
+  // Init toolbar window.
+  void InitToolbar();
+
   // If there is a candy, eat it, otherwise move to some neihbour cell.
   void Move();
   void GetCurrentState();
+
   // Check if there was manual move done with keyboard and if yes, do it.
   // Returns true if move from player was received.
   bool ManualMove();
@@ -52,7 +61,7 @@ class Game {
 
   sfg::SFGUI sfgui_;
   ToolPrintVariables tool_print_variables_;
-  SfguiWindow sfgui_window_;
+  std::unique_ptr<SfguiWindow> sfgui_window_;
 
   // TODO(simsa-st): Comming soon.
   // void Render();

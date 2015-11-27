@@ -16,8 +16,7 @@ using c24::communication::StreamTcpClient;
 
 Game::Game(const string& host, int port)
     : game_stream_(GameStream(
-          unique_ptr<StreamBackendInterface>(new StreamTcpClient(host, port)))),
-      sfgui_window_(&sfgui_, TOOLBAR_WINDOW_SIZE, TOOLBAR_WINDOW_SIZE) {
+          unique_ptr<StreamBackendInterface>(new StreamTcpClient(host, port)))) {
   board_size_ = game_stream_.GetInit();
   board_ = Board<Cell>(board_size_);
   player_.pos = game_stream_.GetMyPos();
@@ -27,7 +26,37 @@ Game::Game(const string& host, int port)
   for (int d = 0; d < 4; ++d) go_to_dir_[d] = false;
 }
 
-void Game::Run() {
+void Game::Run(bool visualizer, bool toolbar) {
+  if (!visualizer && !toolbar) {
+    RunGame();
+    return;
+  }
+  if (visualizer) InitVisualizer();
+  if (toolbar) InitToolbar();
+  std::thread game([this] { this->RunGame(); });
+
+  // Keep the windows alive while all of the windows that were initially open
+  // are still open.
+  while ((!visualizer || window_->isOpen()) &&
+         (!toolbar || sfgui_window_->isOpen())) {
+    if (visualizer) {
+      ProcessEvents();
+      Render();
+    }
+    if (toolbar) {
+      sfgui_window_->ProcessEvents();
+      sfgui_window_->Render();
+    }
+  }
+  // Close the second window if it is still open.
+  if (visualizer && window_->isOpen()) window_->close();
+  if (toolbar && sfgui_window_->isOpen()) sfgui_window_->close();
+
+  // Wait for the game thread.
+  game.join();
+}
+
+void Game::RunGame() {
   while (true) {
     Move();
     // Wait until next round.
@@ -36,31 +65,29 @@ void Game::Run() {
   }
 }
 
-void Game::RunWithVisualizer() {
+void Game::InitVisualizer() {
   window_ = std::unique_ptr<sf::RenderWindow>(new sf::RenderWindow(
       sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "My window"));
   window_->setVerticalSyncEnabled(true);
+}
+void Game::InitToolbar() {
+  sfgui_window_ = std::unique_ptr<SfguiWindow>(
+      new SfguiWindow(&sfgui_, TOOLBAR_WINDOW_SIZE, TOOLBAR_WINDOW_SIZE));
 
   tool_print_variables_.AddVariable("board_size", &board_size_, 0.01);
   tool_print_variables_.AddVariable("current_turn", &current_turn_, 0.01);
   tool_print_variables_.AddVariable("candies", &(player_.score), 0.01);
-  tool_print_variables_.AddVariableCustomPrint("player", &player_, &print_player, 0.1);
-  tool_print_variables_.AddVariableCustomPrint("left", &go_to_dir_[0], &print_bool, 0.01);
-  tool_print_variables_.AddVariableCustomPrint("down", &go_to_dir_[1], &print_bool, 0.01);
-  tool_print_variables_.AddVariableCustomPrint("right", &go_to_dir_[2], &print_bool, 0.01);
-  tool_print_variables_.AddVariableCustomPrint("up", &go_to_dir_[3], &print_bool, 0.01);
-  sfgui_window_.AddWindow(tool_print_variables_.WindowPtr());
-
-  std::thread game([this] { this->Run(); });
-  while (window_->isOpen() && sfgui_window_.isOpen()) {
-    sfgui_window_.ProcessEvents();
-    sfgui_window_.Render();
-    ProcessEvents();
-    Render();
-  }
-  if (window_->isOpen()) window_->close();
-  if (sfgui_window_.isOpen()) sfgui_window_.close();
-  game.join();
+  tool_print_variables_.AddVariableCustomPrint("player", &player_,
+                                               &print_player, 0.1);
+  tool_print_variables_.AddVariableCustomPrint("left", &go_to_dir_[0],
+                                               &print_bool, 0.01);
+  tool_print_variables_.AddVariableCustomPrint("down", &go_to_dir_[1],
+                                               &print_bool, 0.01);
+  tool_print_variables_.AddVariableCustomPrint("right", &go_to_dir_[2],
+                                               &print_bool, 0.01);
+  tool_print_variables_.AddVariableCustomPrint("up", &go_to_dir_[3],
+                                               &print_bool, 0.01);
+  sfgui_window_->AddWindow(tool_print_variables_.WindowPtr());
 }
 
 void Game::Move() {

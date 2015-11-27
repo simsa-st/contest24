@@ -1,5 +1,6 @@
 # Candy Eaters full example. Simple game that shows all the features of the library.
 project(candy_eaters)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 # candy_eaters solution
 # ---------------------
