@@ -20,8 +20,8 @@ DEFINE_int32(port, 5500,
 int main(int argc, char** argv) {
   google::InitGoogleLogging(*argv);
   google::ParseCommandLineFlags(&argc, &argv, true);
-  Stream stream = Stream(std::unique_ptr<StreamBackendInterface>(
-      new StreamTcpServer(FLAGS_port)));
+  Stream stream(
+      std::unique_ptr<StreamBackendInterface>(new StreamTcpServer(FLAGS_port)));
   std::cout << stream.GetMessage() << std::endl;
   stream.SendMessage("HELLO CLIENT");
 

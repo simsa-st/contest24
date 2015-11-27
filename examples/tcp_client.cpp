@@ -21,7 +21,7 @@ DEFINE_int32(port, 5500, "Define port number to which do you want to connect.");
 int main(int argc, char** argv) {
   google::InitGoogleLogging(*argv);
   google::ParseCommandLineFlags(&argc, &argv, true);
-  Stream stream = Stream(std::unique_ptr<StreamBackendInterface>(
+  Stream stream(std::unique_ptr<StreamBackendInterface>(
       new StreamTcpClient(FLAGS_host, FLAGS_port)));
   stream.SendMessage("HELLO SERVER");
   std::cout << stream.GetMessage() << std::endl;
