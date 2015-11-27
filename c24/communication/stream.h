@@ -48,6 +48,12 @@ class Stream {
   template <typename T>
   std::vector<T> GetVectorOf(int cnt, std::string* rest_of_msg);
 
+  // When you don't need the rest of the message.
+  template <typename T>
+  std::vector<T> GetVectorOf(int cnt) {
+    return GetVectorOf<T>(cnt, nullptr);
+  }
+
  private:
   std::unique_ptr<StreamBackendInterface> stream_backend_;
 };
