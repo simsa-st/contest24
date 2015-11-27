@@ -3,9 +3,6 @@
 #include <thread>
 #include <SFML/Graphics.hpp>
 
-#include "c24/communication/stream_backend_interface.h"
-#include "c24/communication/stream_tcp_client.h"
-
 std::string print_bool(bool x) {
   if (x) return "True";
   return "False";

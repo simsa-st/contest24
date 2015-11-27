@@ -6,8 +6,7 @@
 #include <sstream>
 #include <vector>
 
-#include "c24/communication/stream.h"
-#include "c24/communication/stream_backend_interface.h"
+#include "c24/c24.h"
 
 #include "objects.h"
 using namespace std;

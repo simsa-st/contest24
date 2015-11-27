@@ -6,8 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "c24/communication/stream.h"
-#include "c24/communication/server_stream.h"
+#include "c24/c24.h"
 
 #include "server_objects.h"
 using namespace std;

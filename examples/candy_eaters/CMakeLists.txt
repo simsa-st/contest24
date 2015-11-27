@@ -7,7 +7,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 set(solution ${PROJECT_NAME})
 
 set(objects_sources
-  objects.h
   objects/board.cpp
   objects/cell.cpp
   objects/player.cpp
@@ -53,7 +52,6 @@ set(server_objects_sources
   objects/server_cell.cpp
   objects/server_move.cpp
   objects/server_player.cpp
-  server_objects.h
 )
 set(${server}_sources
   ${server_objects_sources}

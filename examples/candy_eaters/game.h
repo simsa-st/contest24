@@ -7,9 +7,7 @@
 
 #include <SFGUI/SFGUI.hpp>
 
-#include "c24/communication/stream.h"
-#include "c24/toolbar/print_variables.h"
-#include "c24/toolbar/sfgui.h"
+#include "c24/c24.h"
 #include "game_stream.h"
 
 using namespace std;

@@ -3,9 +3,7 @@
 #include <sstream>
 
 #include <glog/logging.h>
-#include "c24/communication/stream_backend_interface.h"
-#include "c24/communication/stream_tcp_server.h"
-#include "c24/communication/stream.h"
+#include "c24/c24.h"
 
 using c24::communication::StreamBackendInterface;
 using c24::communication::StreamTcpServer;
