@@ -21,12 +21,15 @@ set(${solution}_sources
 
 add_executable(${solution} ${${solution}_sources})
 target_link_libraries(${solution} communication)
+target_link_libraries(${solution} toolbar)
 
 find_package(gflags REQUIRED)
 target_link_libraries(${solution} gflags)
 
 find_package(glog REQUIRED)
 target_link_libraries(${solution} glog)
+
+target_link_libraries(${solution} sfgui)
 
 # Detect and add SFML
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})

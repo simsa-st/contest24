@@ -1,6 +1,8 @@
 #ifndef OBJECTS_POS_H_
 #define OBJECTS_POS_H_
 
+#include <string>
+
 // TODO(simsa-st): Do a class from this, that is itterable
 // (for (auto dir : dirs)) and provides functions such as OppositeDir(),
 // Letter() ('U'), Word() ('UP'), sf::Keyboard::Up, etc.
@@ -18,6 +20,8 @@ class Pos {
   }
   int x() const { return x_; }
   int y() const { return y_; }
+
+  std::string Print() const;
 
  protected:
   int x_;
