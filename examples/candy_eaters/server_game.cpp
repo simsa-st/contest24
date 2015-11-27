@@ -16,6 +16,7 @@ ServerGame::ServerGame(vector<int> ports, int board_size,
                        int turn_length_micros)
     : board_size_(board_size),
       turn_length_micros_(turn_length_micros),
+      current_turn_(0),
       board_(board_size) {
   num_players_ = ports.size();
 
@@ -212,6 +213,8 @@ void ServerGame::ProcessCommand(int pid, string msg) {
 }
 
 void ServerGame::CmdWait(int pid) {
+  player_stream_[pid].ReplyWithOk();
+  player_stream_[pid].SendMessage("WAITING");
   player_[pid].waiting = true;
 }
 void ServerGame::CmdGetInit(int pid) {

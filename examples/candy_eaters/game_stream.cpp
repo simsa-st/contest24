@@ -5,7 +5,12 @@
 GameStream::GameStream(std::unique_ptr<StreamBackendInterface> stream_backend)
     : stream_(std::move(stream_backend)) {}
 
-bool GameStream::Wait() { return stream_.SendMessageWithCheck("WAIT"); }
+bool GameStream::Wait() {
+  stream_.SendMessageWithCheck("WAIT");
+  stream_.GetMessage();
+  std::string str = stream_.GetMessage();
+  return str == "OK";
+}
 
 int GameStream::GetInit() {
   stream_.SendMessageWithCheck("GET_INIT");
