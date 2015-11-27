@@ -1,5 +1,8 @@
 #include "sfgui.h"
 
+namespace c24 {
+namespace toolbar {
+
 SfguiWindow::SfguiWindow(sfg::SFGUI* sfgui, int screen_width, int screen_height)
     : sfgui_(sfgui),
       render_window_(
@@ -36,3 +39,6 @@ void SfguiWindow::Render() {
 }
 
 void SfguiWindow::AddWindow(sfg::Window::Ptr window) { desktop_.Add(window); }
+
+}  // toolbar
+}  // sfgui

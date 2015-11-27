@@ -1,5 +1,8 @@
 #include "print_variables.h"
 
+namespace c24 {
+namespace toolbar {
+
 ToolPrintVariables::ToolPrintVariables()
     : next_row_num_(0),
       window_(sfg::Window::Create()),
@@ -20,3 +23,6 @@ void ToolPrintVariables::AddRowToTable(const std::string& name,
                  sf::Vector2f(10.f, 10.f));
   ++next_row_num_;
 }
+
+}  // namespace toolbar
+}  // namespace c24

@@ -13,6 +13,9 @@
 #include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Widgets.hpp>
 
+namespace c24 {
+namespace toolbar {
+
 // Custom widget that prints current value of specified variable. It holds raw
 // pointer to the variable (of arbitrary type) and pointer to the function that
 // takes variable of this type and returns std::string. Text is updated
@@ -135,4 +138,8 @@ void ToolPrintVariables::AddVariableCustomPrint(const std::string& name, T* x,
                                                 float update_after_seconds) {
   AddRowToTable(name, VariableLabel<T>::Create(x, print, update_after_seconds));
 }
+
+}  // namespace toolbar
+}  // namespace c24
+
 #endif  // C24_TOOLBAR_PRINT_VARIABLES_H_

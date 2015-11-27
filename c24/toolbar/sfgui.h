@@ -7,6 +7,9 @@
 #include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Widgets.hpp>
 
+namespace c24 {
+namespace toolbar {
+
 // Window that contains the SFGUI widgets.
 class SfguiWindow {
  public:
@@ -23,4 +26,8 @@ class SfguiWindow {
   sf::RenderWindow render_window_;
   std::chrono::system_clock::time_point last_update_;
 };
+
+}  // toolbar
+}  // sfgui
+
 #endif  // C24_TOOLBAR_SFGUI_H_

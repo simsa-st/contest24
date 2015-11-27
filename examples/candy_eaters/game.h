@@ -11,6 +11,8 @@
 #include "game_stream.h"
 
 using namespace std;
+using c24::toolbar::SfguiWindow;
+using c24::toolbar::ToolPrintVariables;
 
 #define WINDOW_SIZE 400
 #define TOOLBAR_WINDOW_SIZE 400
