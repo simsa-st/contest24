@@ -1,5 +1,6 @@
 # Build files
 build/*
+c24/extern/*/build/*
 
 # Vim temp files
 *.swp
