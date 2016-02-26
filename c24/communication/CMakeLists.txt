@@ -3,6 +3,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(${PROJECT_NAME}_headers
   server_stream.h
+  status.h
   stream_backend_interface.h
   stream_tcp.h
   stream_tcp_client.h
@@ -10,6 +11,7 @@ set(${PROJECT_NAME}_headers
   stream.h)
 set(${PROJECT_NAME}_sources
   server_stream.cpp
+  status.cpp
   stream_tcp.cpp
   stream_tcp_client.cpp
   stream_tcp_server.cpp

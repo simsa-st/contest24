@@ -11,7 +11,7 @@ struct Player {
 
   std::string Print() const;
 
-  Pos pos;
+  Pos pos, future_pos;
   int score;
 };
 

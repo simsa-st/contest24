@@ -23,6 +23,11 @@ class Pos {
 
   std::string Print() const;
 
+  bool operator==(const Pos& other) const {
+    return x_ == other.x_ && y_ == other.y_;
+  }
+  bool operator!=(const Pos& other) const { return !(*this == other); }
+
  protected:
   int x_;
   int y_;

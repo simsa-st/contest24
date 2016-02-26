@@ -11,6 +11,7 @@
 #include "objects.h"
 using namespace std;
 
+using c24::communication::Status;
 using c24::communication::Stream;
 using c24::communication::StreamBackendInterface;
 
@@ -18,14 +19,16 @@ using c24::communication::StreamBackendInterface;
 class GameStream {
  public:
   GameStream(std::unique_ptr<StreamBackendInterface> stream_backend);
-  // Send WAIT and block until message is not received. Return if it was OK.
+  Status LastStatus() const { return stream_.LastStatus(); }
+  // Send WAIT and block until messages "OK, WAITING, OK" are received (or
+  // until one of the messages is not as expected).
   bool Wait();
-  int GetInit();
-  Pos GetMyPos();
-  int GetMyScore();
-  int GetCandyCount();
-  void EatCandy();
-  void Move(Pos pos);
+  bool GetInit(int* n);
+  bool GetMyPos(Pos* pos);
+  bool GetMyScore(int* score);
+  bool GetCandyCount(int* candy_count);
+  bool EatCandy();
+  bool Move(Pos pos);
 
  private:
   Stream stream_;

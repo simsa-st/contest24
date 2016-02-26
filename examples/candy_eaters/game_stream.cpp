@@ -7,35 +7,46 @@ GameStream::GameStream(std::unique_ptr<StreamBackendInterface> stream_backend)
 
 bool GameStream::Wait() {
   stream_.SendMessageWithCheck("WAIT");
-  stream_.GetMessage();
-  std::string str = stream_.GetMessage();
-  return str == "OK";
+  if (!stream_.LastStatus().Ok()) return false;
+  if (!stream_.GetMessageWithCheck("WAITING")) return false;
+  if (!stream_.LastStatus().Ok()) return false;
+  return stream_.GetMessageWithCheck();
 }
 
-int GameStream::GetInit() {
+bool GameStream::GetInit(int *n) {
   stream_.SendMessageWithCheck("GET_INIT");
-  return stream_.GetVectorOf<int>(1)[0];
+  if (!stream_.LastStatus().Ok()) return false;
+  *n = stream_.GetVectorOf<int>(1)[0];
+  return true;
 }
 
-Pos GameStream::GetMyPos() {
+bool GameStream::GetMyPos(Pos* pos) {
   stream_.SendMessageWithCheck("GET_MY_POS");
-  vector<int> pos = stream_.GetVectorOf<int>(2);
-  return Pos(pos[0], pos[1]);
+  if (!stream_.LastStatus().Ok()) return false;
+  vector<int> raw_pos = stream_.GetVectorOf<int>(2);
+  *pos = Pos(raw_pos[0], raw_pos[1]);
+  return true;
 }
 
-int GameStream::GetMyScore() {
+bool GameStream::GetMyScore(int* score) {
   stream_.SendMessageWithCheck("GET_MY_SCORE");
-  return stream_.GetVectorOf<int>(1)[0];
+  if (!stream_.LastStatus().Ok()) return false;
+  *score = stream_.GetVectorOf<int>(1)[0];
+  return true;
 }
 
-int GameStream::GetCandyCount() {
+bool GameStream::GetCandyCount(int *candy_count) {
   stream_.SendMessageWithCheck("GET_CANDY_COUNT");
-  return stream_.GetVectorOf<int>(1)[0];
+  if (!stream_.LastStatus().Ok()) return false;
+  *candy_count = stream_.GetVectorOf<int>(1)[0];
+  return true;
 }
 
-void GameStream::EatCandy() { stream_.SendMessageWithCheck("EAT_CANDY"); }
+bool GameStream::EatCandy() {
+  return stream_.SendMessageWithCheck("EAT_CANDY");
+}
 
-void GameStream::Move(Pos pos) {
-  stream_.SendMessageWithCheck("MOVE " + to_string(pos.x()) + " " +
-                               to_string(pos.y()));
+bool GameStream::Move(Pos pos) {
+  return stream_.SendMessageWithCheck("MOVE " + to_string(pos.x()) + " " +
+                                      to_string(pos.y()));
 }

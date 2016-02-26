@@ -16,10 +16,14 @@ class StreamTcpClient : public StreamTcp {
  public:
   // Connect to server at specified location.
   StreamTcpClient(const sf::IpAddress& ip_address, unsigned short port);
-  StreamTcpClient(const std::string& ip_address, unsigned short port)
-      : StreamTcpClient(sf::IpAddress(ip_address), port) {}
-  StreamTcpClient(const char* ip_address, unsigned short port)
-      : StreamTcpClient(sf::IpAddress(ip_address), port) {}
+  StreamTcpClient(const std::string& ip_address, unsigned short port);
+  StreamTcpClient(const char* ip_address, unsigned short port);
+
+  void Reconnect() override;
+
+ private:
+  sf::IpAddress ip_address_;
+  unsigned short port_;
 };
 
 }  // namespace communication

@@ -1,6 +1,8 @@
 #include "c24/communication/stream.h"
 
+#include <chrono>
 #include <string>
+#include <thread>
 #include <glog/logging.h>
 
 namespace c24 {
@@ -9,44 +11,80 @@ namespace communication {
 Stream::Stream(std::unique_ptr<StreamBackendInterface> stream_backend)
     : stream_backend_(std::move(stream_backend)) {}
 
-bool Stream::Connected() const {
+bool Stream::Connected() {
+  status_ = Status();
   if (stream_backend_ == nullptr) {
     return false;
   }
   return stream_backend_->Connected();
 }
 
-bool Stream::MessageAvailable() const {
-  CHECK(stream_backend_ != nullptr);
+bool Stream::MessageAvailable() {
+  CheckConnectionAndReconnect();
+  status_ = Status();
+  CHECK_NE(stream_backend_, nullptr);
   return stream_backend_->MessageAvailable();
 }
 
-std::string Stream::GetMessage() const {
-  CHECK(stream_backend_ != nullptr);
+std::string Stream::GetMessage() {
+  CheckConnectionAndReconnect();
+  status_ = Status();
+  CHECK_NE(stream_backend_, nullptr);
   std::string msg = stream_backend_->GetMessage();
   LOG(INFO) << "Received: \"" << msg << "\"";
   return msg;
 }
 
-bool Stream::SendMessage(const std::string& msg, bool newline) const {
-  CHECK(stream_backend_ != nullptr);
-  // Put two spaces after SENDING so it is lined up with messages after
-  // RECEIVED.
+bool Stream::SendMessage(const std::string& msg, bool newline) {
+  CheckConnectionAndReconnect();
+  status_ = Status();
+  CHECK_NE(stream_backend_, nullptr);
+  // Put two spaces after Sending so it is lined up with messages after
+  // Received.
   LOG(INFO) << "Sending:  \"" << msg << "\"";
   const std::string& msg_to_send = newline ? msg + '\n' : msg;
   return stream_backend_->SendMessage(msg_to_send);
 }
 
-bool Stream::SendMessageWithCheck(const std::string& msg, bool newline,
-                                  const char* expected) const {
-  bool success = SendMessage(msg, newline);
+Status Stream::LastStatus() const {
+  if (!status_.Ok()) return status_;
+  CHECK_NE(stream_backend_, nullptr);
+  return stream_backend_->LastStatus();
+}
+
+bool Stream::GetMessageWithCheck(const char* expected) {
   std::string msg_ok = GetMessage();
   if (msg_ok != expected) {
+    status_ = stream_backend_->LastStatus();
+    if (msg_ok.length() >= 11 && msg_ok.substr(0, 5) == "ERROR") {
+      int error_code = std::atoi(msg_ok.substr(6, 3).c_str());
+      status_.SetServerError(error_code, msg_ok.substr(11));
+    }
     LOG(ERROR) << "Expected \"" << expected << "\" but received \"" << msg_ok
                << "\"";
-    success = false;
+    return false;
+  }
+  return true;
+}
+
+bool Stream::SendMessageWithCheck(const std::string& msg, bool newline,
+                                  const char* expected) {
+  status_ = Status();
+  bool success = SendMessage(msg, newline);
+  if (success) {
+    success = GetMessageWithCheck(expected);
   }
   return success;
+}
+
+void Stream::CheckConnectionAndReconnect() {
+  if (Connected()) return;
+  stream_backend_->Reconnect();
+  while (!Connected()) {
+    std::this_thread::sleep_for(
+        std::chrono::milliseconds(TIME_BETWEEN_RECONNECT_TRIES_MILLISECONDS));
+    stream_backend_->Reconnect();
+  }
 }
 
 }  // namespace communication

@@ -44,6 +44,17 @@ std::string ServerStream::GetMessage() {
   }
   return "";
 }
+
+// The message is returned through pointer to string rather than through
+// std::future<std::string> to be sure that the whole message is copied when
+// the condition variable is notified.
+std::future<void> ServerStream::GetFutureMessage(std::condition_variable& cv, std::string* msg) {
+  return std::async(std::launch::async, [&cv, this, msg] {
+    *msg = GetMessage();
+    cv.notify_one();
+  });
+}
+
 bool ServerStream::SendMessage(const std::string& msg) {
   if (Connected()) {
     return stream_->SendMessage(msg);

@@ -1,6 +1,7 @@
 #ifndef COMMUNICATION_SERVER_STREAM_H_
 #define COMMUNICATION_SERVER_STREAM_H_
 
+#include <condition_variable>
 #include <functional>
 #include <future>
 #include <memory>
@@ -78,12 +79,20 @@ class ServerStream {
   bool MessageAvailable();
   // Blocks until the message is received. If not connected, returns empty string.
   std::string GetMessage();
+  // Wait for the message in a new thread and return the future to recognize
+  // when the message was received. Store the message into *msg and notify the
+  // condition variable after message is received.
+  std::future<void> GetFutureMessage(std::condition_variable& cv, std::string* msg);
+
   // If connected, sends message over stream and returns if it was sent
   // succesfully. Otherwise returns false.
   bool SendMessage(const std::string& msg);
   void ReplyWithOk() { SendMessage("OK"); }
-  void ReplyWithError(std::string error_msg) {
-    SendMessage("ERROR: " + error_msg);
+  void ReplyWithError(int error_code, const std::string& error_msg) {
+    SendMessage("ERROR " + std::to_string(error_code) + ": " + error_msg);
+  }
+  void ReplyWithError(const std::pair<int, std::string>& error) {
+    ReplyWithError(error.first, error.second);
   }
 
   // Returns the underlying stream or, if not connected, returns nullptr.

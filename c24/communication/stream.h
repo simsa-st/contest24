@@ -6,7 +6,10 @@
 #include <string>
 #include <vector>
 
+#include "c24/communication/status.h"
 #include "c24/communication/stream_backend_interface.h"
+
+#define TIME_BETWEEN_RECONNECT_TRIES_MILLISECONDS 500
 
 namespace c24 {
 namespace communication {
@@ -23,24 +26,33 @@ class Stream {
   Stream(std::unique_ptr<StreamBackendInterface> stream_backend);
 
   // Return if the other side of the stream is still connected.
-  bool Connected() const;
+  bool Connected();
 
   // Non-blocking call that returns if there is a message available on the
   // stream.
-  bool MessageAvailable() const;
+  bool MessageAvailable();
 
   // Blocking call that receives a message without the newline character.
-  std::string GetMessage() const;
+  std::string GetMessage();
 
   // Send a message and if 'newline' is true, append newline. Returns true if
   // the message was sent successfully.
-  bool SendMessage(const std::string& msg, bool newline = true) const;
+  bool SendMessage(const std::string& msg, bool newline = true);
+
+  // Return the status of the last operation.
+  Status LastStatus() const;
+
+  // Get message and check it has the value "expected".
+  // Also, if the received message is not correct, try to extract error from
+  // the message. Error is expected to be in the format:
+  // ERROR xxx: error_message
+  bool GetMessageWithCheck(const char* expected = "OK");
 
   // Send a message, then receive reply and check if it is equal to 'expected'.
   // Returns true if the message was sent succesfully and expected value
   // (without newline) was received.
   bool SendMessageWithCheck(const std::string& msg, bool newline = true,
-                            const char* expected = "OK") const;
+                            const char* expected = "OK");
 
   // Receive a message and extract "cnt" variables of type T from it using
   // stringstream. Also return rest of the message in the second argument if it
@@ -55,6 +67,10 @@ class Stream {
   }
 
  private:
+  // If not connected, try to reconnect until successful.
+  void CheckConnectionAndReconnect();
+
+  Status status_;
   std::unique_ptr<StreamBackendInterface> stream_backend_;
 };
 

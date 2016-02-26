@@ -2,6 +2,7 @@
 #define COMMUNICATION_STREAM_BACKEND_INTERFACE_H_
 
 #include <string>
+#include "c24/communication/status.h"
 
 namespace c24 {
 namespace communication {
@@ -27,6 +28,12 @@ class StreamBackendInterface {
 
   // Returns if the connection is still valid.
   virtual bool Connected() const = 0;
+
+  // Try to reconnect.
+  virtual void Reconnect() = 0;
+
+  // Returns the status of last operation.
+  virtual Status LastStatus() const = 0;
 };
 
 }  // namespace communication

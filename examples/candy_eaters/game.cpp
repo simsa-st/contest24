@@ -13,14 +13,9 @@ using c24::communication::StreamTcpClient;
 
 Game::Game(const string& host, int port)
     : game_stream_(GameStream(
-          unique_ptr<StreamBackendInterface>(new StreamTcpClient(host, port)))) {
-  board_size_ = game_stream_.GetInit();
-  board_ = Board<Cell>(board_size_);
-  player_.pos = game_stream_.GetMyPos();
-  board_[player_.pos].vis_player = true;
-  current_turn_ = 0;
-
-  for (int d = 0; d < 4; ++d) go_to_dir_[d] = false;
+          unique_ptr<StreamBackendInterface>(new StreamTcpClient(host, port)))),
+      port_(port) {
+  NewRound();
 }
 
 void Game::Run(bool visualizer, bool toolbar) {
@@ -54,17 +49,30 @@ void Game::Run(bool visualizer, bool toolbar) {
 }
 
 void Game::RunGame() {
+  current_round_ = 0;
   while (true) {
     Move();
-    // Wait until next round.
-    while (!game_stream_.Wait());
+    manual_pos_ = Pos(-1, -1);
+    Move(true);
+    // Wait until next turn.
+    while (!game_stream_.Wait()) {
+      if (game_stream_.LastStatus().error_code == kErrorNoCurrentRound) {
+        EndOfRound();
+        break;
+      }
+    }
+    if (current_round_ != last_current_round_) {
+      NewRound();
+      last_current_round_ = current_round_;
+    }
     ++current_turn_;
   }
 }
 
 void Game::InitVisualizer() {
   window_ = std::unique_ptr<sf::RenderWindow>(new sf::RenderWindow(
-      sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "My window"));
+      sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE),
+      "Candy Eaters -- Player, port " + to_string(port_)));
   window_->setVerticalSyncEnabled(true);
 }
 void Game::InitToolbar() {
@@ -76,60 +84,64 @@ void Game::InitToolbar() {
   tool_print_variables_.AddVariable("candies", &(player_.score), 0.01);
   tool_print_variables_.AddVariableCustomPrint("player", &player_,
                                                &print_player, 0.1);
-  tool_print_variables_.AddVariableCustomPrint("left", &go_to_dir_[0],
-                                               &print_bool, 0.01);
-  tool_print_variables_.AddVariableCustomPrint("down", &go_to_dir_[1],
-                                               &print_bool, 0.01);
-  tool_print_variables_.AddVariableCustomPrint("right", &go_to_dir_[2],
-                                               &print_bool, 0.01);
-  tool_print_variables_.AddVariableCustomPrint("up", &go_to_dir_[3],
-                                               &print_bool, 0.01);
   sfgui_window_->AddWindow(tool_print_variables_.WindowPtr());
 }
 
-void Game::Move() {
-  GetCurrentState();
-  if (ManualMove()) return;
+void Game::Move(bool plan_future) {
+  if (!plan_future) {
+    GetCurrentState();
+  }
+  if (ManualMove(plan_future)) return;
 
   if (board_[player_.pos].last_seen_candies > 0) {
-    DoMoveEatCandy();
+    DoMoveEatCandy(plan_future);
   } else {
-    DoMoveMove(ChooseWhereToMoveRandom());
+    Pos new_pos;
+    if (!plan_future && ValidMove(player_.pos, player_.future_pos)) {
+      new_pos = player_.future_pos;
+    } else {
+      new_pos = ChooseWhereToMoveRandom();
+    }
+    DoMoveMove(new_pos, plan_future);
   }
 }
 
 void Game::GetCurrentState() {
-  player_.score = game_stream_.GetMyScore();
-  player_.pos = game_stream_.GetMyPos();
+  game_stream_.GetMyScore(&player_.score);
+  game_stream_.GetMyPos(&player_.pos);
   board_[player_.pos].last_turn_visited = current_turn_;
-  board_[player_.pos].last_seen_candies = game_stream_.GetCandyCount();
-  board_[player_.pos].just_eating = false;
+  game_stream_.GetCandyCount(&board_[player_.pos].last_seen_candies);
 }
 
-bool Game::ManualMove() {
-  for (int d = 0; d < 4; ++d) {
-    if (go_to_dir_[d]) {
-      go_to_dir_[d] = false;
-      Pos new_pos = player_.pos.move(d);
-      if (board_.inside(new_pos)) {
-        DoMoveMove(new_pos);
-        return true;
-      }
-    }
+bool Game::ManualMove(bool plan_future) {
+  if (ValidMove(player_.pos, manual_pos_)) {
+    DoMoveMove(manual_pos_, plan_future);
+    return true;
   }
   return false;
 }
 
-void Game::DoMoveEatCandy() {
-  game_stream_.EatCandy();
-  board_[player_.pos].just_eating = true;
+void Game::DoMoveEatCandy(bool plan_future) {
+  if (plan_future) {
+    board_[player_.pos].just_eating = true;
+    ChangeFuturePos(Pos(-1, -1));
+  } else {
+    game_stream_.EatCandy();
+    --board_[player_.pos].last_seen_candies;
+  }
 }
 
-void Game::DoMoveMove(Pos new_pos) {
-  game_stream_.Move(new_pos);
-  board_[player_.pos].vis_player = false;
-  player_.pos = new_pos;
-  board_[player_.pos].vis_player = true;
+void Game::DoMoveMove(Pos new_pos, bool plan_future) {
+  board_[player_.pos].just_eating = false;
+  if (plan_future) {
+    ChangeFuturePos(new_pos);
+  } else {
+    game_stream_.Move(new_pos);
+    board_[player_.pos].vis_player = false;
+    player_.pos = new_pos;
+    board_[player_.pos].vis_player = true;
+    ChangeFuturePos(Pos(-1, -1));
+  }
 }
 
 Pos Game::ChooseWhereToMoveRandom() {
@@ -141,6 +153,42 @@ Pos Game::ChooseWhereToMoveRandom() {
   return new_pos;
 }
 
+bool Game::ValidMove(Pos from_pos, Pos to_pos) {
+  if (!board_.inside(to_pos)) return false;
+ for (int dir = 0; dir < 4; ++dir) {
+   if (from_pos.move(dir) == to_pos) return true;
+ }
+ return false;
+}
+void Game::ChangeFuturePos(Pos new_pos) {
+  if (board_.inside(player_.future_pos)) {
+    board_[player_.future_pos].vis_future_player = false;
+  }
+  player_.future_pos = new_pos;
+  if (ValidMove(player_.pos, player_.future_pos)) {
+    board_[player_.future_pos].vis_future_player = true;
+  }
+}
+
+void Game::EndOfRound() {
+  if (current_round_ == last_current_round_) {
+    ++current_round_;
+  }
+}
+void Game::NewRound() {
+  player_.score = 0;
+  game_stream_.GetInit(&board_size_);
+  while (game_stream_.LastStatus().error_code == kErrorNoCurrentRound) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    game_stream_.GetInit(&board_size_);
+  }
+  board_ = Board<Cell>(board_size_);
+  game_stream_.GetMyPos(&player_.pos);
+  manual_pos_ = Pos(-1, -1);
+  board_[player_.pos].vis_player = true;
+  current_turn_ = 0;
+}
+
 void Game::ProcessEvents() {
   sf::Event event;
   while (window_->pollEvent(event)) {
@@ -150,19 +198,24 @@ void Game::ProcessEvents() {
     if (event.type == sf::Event::KeyPressed) {
       // Cancel previous requests for move, even when something else than arrow
       // is pressed.
-      for (int i = 0; i < 4; ++i) go_to_dir_[i] = false;
+      manual_pos_ = Pos(-1, -1);
+      int dir = -1;
       if (event.key.code == sf::Keyboard::Left) {
-        go_to_dir_[0] = true;
+        dir = 0;
       }
       if (event.key.code == sf::Keyboard::Down) {
-        go_to_dir_[1] = true;
+        dir = 1;
       }
       if (event.key.code == sf::Keyboard::Right) {
-        go_to_dir_[2] = true;
+        dir = 2;
       }
       if (event.key.code == sf::Keyboard::Up) {
-        go_to_dir_[3] = true;
+        dir = 3;
       }
+      if (dir >= 0 && dir < 4) {
+        manual_pos_ = player_.pos.move(dir);
+      }
+      Move(true);
     }
   }
 }

@@ -42,4 +42,10 @@ void Cell::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     player.setPosition(0.4, 0.4);
     target.draw(player, states);
   }
+  if (vis_future_player) {
+    sf::RectangleShape player(sf::Vector2f(0.2, 0.2));
+    player.setFillColor(sf::Color(255, 0, 0));
+    player.setPosition(0.4, 0.4);
+    target.draw(player, states);
+  }
 }

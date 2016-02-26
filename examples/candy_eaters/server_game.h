@@ -1,9 +1,13 @@
 #ifndef SERVER_GAME_H_
 #define SERVER_GAME_H_
 
+#include <condition_variable>
 #include <chrono>
+#include <future>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "c24/c24.h"
@@ -11,26 +15,33 @@
 #include "server_objects.h"
 using namespace std;
 
-#define BOARD_SIZE 5
-#define TURN_LENGTH_MICROS 1000000
-#define NUM_TURNS 5000
+#define MIN_BOARD_SIZE 5
+#define MAX_BOARD_SIZE 10
+#define NUM_TURNS 30
+#define NUM_ROUNDS 1000
+#define TURN_LENGTH_MILLISECONDS 1000
+#define TIME_BETWEEN_ROUNDS_MILLISECONDS 3000
+#define SLEEP_BETWEEN_COMMANDS_MILLIS 100
+
 #define WINDOW_SIZE 400
+
 
 // Server for Candy Eaters game. Communicates with all the players, replies to
 // their queries and manages the state of the game.
 class ServerGame {
  public:
-  ServerGame(vector<int> ports)
-      : ServerGame(ports, BOARD_SIZE, TURN_LENGTH_MICROS) {}
-  ServerGame(vector<int> ports, int board_size, int turn_length_micros);
+  ServerGame(vector<int> ports);
   void Run();
   void RunWithVisualizer();
  private:
+  // Prepare the board and positions of all players before the start of new
+  // round.
+  void InitRound();
   // Start listening for tcp connections at given ports.
   void ListenForPlayers(const vector<int>& ports);
 
   // Check the clock if there is a time for a new turn.
-  bool TimeForNewTurn();
+  std::chrono::system_clock::time_point TimeOfNewTurn();
   // Start a new turn.
   void NewTurn();
   // Process moves players did in the last turn in random order.
@@ -42,10 +53,13 @@ class ServerGame {
   // Send OK to all players that sent WAIT in the previous turn.
   void SendOkToWaiting();
 
-  // Manage the connections to players and process all the received commands.
+  // Ensure that we are waiting for commands from every connected player.
+  void GetNewCommands();
+  // Process the commands that were already received. Start listening again for
+  // the players that got disconnected.
   void ProcessCommands();
   // Process one command given by a player with id pid.
-  void ProcessCommand(int pid, string msg);
+  void ProcessCommand(int pid, const string& msg);
   // Individual commands.
   void CmdWait(int pid);
   void CmdGetInit(int pid);
@@ -55,24 +69,42 @@ class ServerGame {
   void CmdEatCandy(int pid);
   void CmdMove(int pid, Pos pos);
 
+  // Draw the board to the window.
+  void Render();
+
   // Error messages.
-  const string kErrorOneMove = "YOU CAN DO ONLY ONE MOVE PER TURN";
-  const string kInvalidMove = "INVALID MOVE";
-  const string kInvalidCommand = "INVALID COMMAND";
-  const string kTooManyArguments = "TOO MANY ARGUMENTS";
-  const string kNoCandies = "NO CANDY ON THIS POSITION";
+  const pair<int, string> kErrorOneMove = {101, "YOU CAN DO ONLY ONE MOVE PER TURN"};
+  const pair<int, string> kInvalidMove = {102, "INVALID MOVE"};
+  const pair<int, string> kInvalidCommand = {103, "INVALID COMMAND"};
+  const pair<int, string> kTooManyArguments = {104, "TOO MANY ARGUMENTS"};
+  const pair<int, string> kNoCandies = {105, "NO CANDY ON THIS POSITION"};
+  const pair<int, string> kNoCurrentRound = {106, "NO CURRENT ROUND"};
+
+  int num_players_;
+  int turn_length_milliseconds_;
 
   int board_size_;
-  // How long players have for one turn.
-  int turn_length_micros_;
-
-  chrono::system_clock::time_point last_turn_time_;
-  // Number of current turn.
-  int current_turn_;
-  int num_players_;
-  vector<c24::communication::ServerStream> player_stream_;
+  // Game state.
   vector<ServerPlayer> player_;
   Board<ServerCell> board_;
+
+  chrono::system_clock::time_point last_turn_time_;
+  bool no_current_round_;
+  // Number of the current round and turn.
+  int current_round_;
+  int current_turn_;
+  // Stream for every player.
+  vector<c24::communication::ServerStream> player_stream_;
+  // Condition variable that gets notified whenever command from some player is
+  // received.
+  std::condition_variable cv_command_received_;
+  // Future to decide whether we are currently trying to receive a command from
+  // a player and if we have already received it.
+  std::vector<std::future<void>> player_future_command_;
+  // The actual command received from the player.
+  std::vector<std::string> player_command_;
+
+  std::unique_ptr<sf::RenderWindow> window_;
 };
 
 #endif  // SERVER_GAME_H_

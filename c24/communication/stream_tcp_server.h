@@ -17,6 +17,8 @@ class StreamTcpServer : public StreamTcp {
   // Listen for connection at specified port. Blocks until connection is
   // established.
   StreamTcpServer(unsigned short port);
+
+  void Reconnect() override {}
 };
 
 }  // namespace communication

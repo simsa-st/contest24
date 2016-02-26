@@ -1,5 +1,7 @@
 #include "c24/communication/stream_tcp.h"
 
+#include <chrono>
+#include <thread>
 #include <glog/logging.h>
 
 namespace c24 {
@@ -8,39 +10,62 @@ namespace communication {
 bool StreamTcp::MessageAvailable() {
   // Check if there is some message in the queue already.
   if (!complete_messages_.empty()) {
+    status_ = Status();
     return true;
   }
   if (socket_.isBlocking()) {
     socket_.setBlocking(false);
   }
   std::size_t received;
-  sf::TcpSocket::Status status = GetData(&received);
-  if (status == sf::TcpSocket::Error || status == sf::TcpSocket::Disconnected) {
-    LOG(ERROR) << "TcpSocket error. Status code: " << status;
+  sf::TcpSocket::Status socket_status = GetData(&received);
+  status_ = Status(socket_status);
+  if (socket_status == sf::TcpSocket::Error ||
+      socket_status == sf::TcpSocket::Disconnected) {
+    LOG(ERROR) << "TcpSocket error. Status code: " << socket_status;
   }
   // if status == sf::TcpSocket::NotReady no message is yet available.
-  return status == sf::TcpSocket::Done;
+  return socket_status == sf::TcpSocket::Done;
 }
 
 std::string StreamTcp::GetMessage() {
+  status_ = Status();
   if (complete_messages_.empty()) {
     if (!socket_.isBlocking()) {
       socket_.setBlocking(true);
     }
+    int not_ready_count = 0;
     // More than one read may be necessary if the message is longer than
     // _TCP_BUFFER_SIZE.
     while (complete_messages_.empty()) {
       std::size_t received;
-      sf::TcpSocket::Status status = GetData(&received);
-      if (status == sf::TcpSocket::NotReady || status == sf::TcpSocket::Error ||
-          status == sf::TcpSocket::Disconnected) {
+      sf::TcpSocket::Status socket_status = GetData(&received);
+      status_ = Status(socket_status);
+      if (socket_status == sf::TcpSocket::NotReady ||
+          socket_status == sf::TcpSocket::Error ||
+          socket_status == sf::TcpSocket::Disconnected) {
         LOG(ERROR)
             << "TcpSocket error when trying to receive data. Status code: "
-            << status;
-        continue;
+            << socket_status;
+        if (socket_status == sf::TcpSocket::NotReady) {
+          ++not_ready_count;
+          if (not_ready_count == NOT_READY_COUNT_THRESHOLD) {
+            LOG(ERROR) << "Socket still not ready, threshold for the number of "
+                          "retries (" << NOT_READY_COUNT_THRESHOLD
+                       << ") hit. Returning empty string";
+            status_.SetNoDataReceivedError();
+            return "";
+          }
+          std::this_thread::sleep_for(std::chrono::microseconds(
+              TIME_TO_WAIT_WHEN_SOCKET_NOT_READY_MICROS));
+          continue;
+        }
+        status_.SetNoDataReceivedError();
+        return "";
       }
       if (received == 0) {
         LOG(ERROR) << "Trying to read in blocking mode but no data received";
+        status_.SetNoDataReceivedError();
+        return "";
       }
     }
   }
@@ -54,14 +79,20 @@ bool StreamTcp::SendMessage(const std::string& msg) {
   if (!socket_.isBlocking()) {
     socket_.setBlocking(true);
   }
-  sf::TcpSocket::Status status = socket_.send(msg.c_str(), msg.length());
-  if (status != sf::TcpSocket::Done) {
-    if (status == sf::TcpSocket::Disconnected) {
+  sf::TcpSocket::Status socket_status = socket_.send(msg.c_str(), msg.length());
+  // Reinitialize the current status.
+  status_ = Status(socket_status);
+  if (socket_status != sf::TcpSocket::Done) {
+    if (socket_status == sf::TcpSocket::Disconnected) {
       connected_ = false;
     }
-    LOG(ERROR) << "TcpSocket error. Status code: " << status;
+    LOG(ERROR) << "TcpSocket error. Status code: " << socket_status;
   }
-  return status == sf::TcpSocket::Done;
+  return socket_status == sf::TcpSocket::Done;
+}
+
+bool StreamTcp::Connected() const {
+  return connected_;
 }
 
 // Internally the class remembers queue of received messages. Every time some

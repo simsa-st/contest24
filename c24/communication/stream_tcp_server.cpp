@@ -9,15 +9,17 @@ StreamTcpServer::StreamTcpServer(unsigned short port) {
   sf::TcpListener listener;
   // bind the listener to a port
   sf::Socket::Status bind_status = listener.listen(port);
+  status_ = Status(bind_status);
   if (bind_status != sf::Socket::Done) {
     connected_ = false;
     LOG(ERROR) << "Could not bind to port " << port
                << ", status: " << bind_status;
   } else {
     sf::Socket::Status accept_status = listener.accept(socket_);
+    status_ = Status(accept_status);
     if (accept_status != sf::Socket::Done) {
       connected_ = false;
-      LOG(ERROR) << "Could not receive the socket, status: " << accept_status;
+      LOG(ERROR) << "Could not accept the socket, status: " << accept_status;
     } else {
       connected_ = true;
     }

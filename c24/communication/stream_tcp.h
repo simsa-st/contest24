@@ -6,12 +6,16 @@
 
 #include <SFML/Network.hpp>
 
+#include "c24/communication/status.h"
 #include "c24/communication/stream_backend_interface.h"
 
 // Specifies the maximum number of characters received at once.
 #ifndef _TCP_BUFFER_SIZE
 #define _TCP_BUFFER_SIZE 100
 #endif  // _TCP_BUFFER_SIZE
+
+#define TIME_TO_WAIT_WHEN_SOCKET_NOT_READY_MICROS 1000
+#define NOT_READY_COUNT_THRESHOLD 5
 
 namespace c24 {
 namespace communication {
@@ -34,10 +38,14 @@ class StreamTcp : public StreamBackendInterface {
   bool SendMessage(const std::string& msg) override;
 
   // Returns if the connection is still valid.
-  bool Connected() const override { return connected_; }
+  bool Connected() const override;
+
+  // Returns the status of last operation.
+  Status LastStatus() const override { return status_; }
  protected:
   StreamTcp() {}
 
+  Status status_;  // Status of the last evaluated operation.
   sf::TcpSocket socket_;
   bool connected_;
  private:

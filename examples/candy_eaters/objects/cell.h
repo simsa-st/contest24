@@ -8,7 +8,8 @@ struct Cell : public sf::Drawable, public sf::Transformable {
   int last_turn_visited = 0;
   bool just_eating;
 
-  bool vis_player;
+  bool vis_player = false;
+  bool vis_future_player = false;
   int now_turn;
   virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
