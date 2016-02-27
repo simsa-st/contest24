@@ -22,14 +22,14 @@ bool Stream::Connected() {
 bool Stream::MessageAvailable() {
   CheckConnectionAndReconnect();
   status_ = Status();
-  CHECK_NE(stream_backend_, nullptr);
+  CHECK(stream_backend_ != nullptr);
   return stream_backend_->MessageAvailable();
 }
 
 std::string Stream::GetMessage() {
   CheckConnectionAndReconnect();
   status_ = Status();
-  CHECK_NE(stream_backend_, nullptr);
+  CHECK(stream_backend_ != nullptr);
   std::string msg = stream_backend_->GetMessage();
   LOG(INFO) << "Received: \"" << msg << "\"";
   return msg;
@@ -38,7 +38,7 @@ std::string Stream::GetMessage() {
 bool Stream::SendMessage(const std::string& msg, bool newline) {
   CheckConnectionAndReconnect();
   status_ = Status();
-  CHECK_NE(stream_backend_, nullptr);
+  CHECK(stream_backend_ != nullptr);
   // Put two spaces after Sending so it is lined up with messages after
   // Received.
   LOG(INFO) << "Sending:  \"" << msg << "\"";
@@ -48,7 +48,7 @@ bool Stream::SendMessage(const std::string& msg, bool newline) {
 
 Status Stream::LastStatus() const {
   if (!status_.Ok()) return status_;
-  CHECK_NE(stream_backend_, nullptr);
+  CHECK(stream_backend_ != nullptr);
   return stream_backend_->LastStatus();
 }
 
