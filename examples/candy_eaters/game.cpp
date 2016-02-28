@@ -54,18 +54,7 @@ void Game::RunGame() {
     Move();
     manual_pos_ = Pos(-1, -1);
     Move(true);
-    // Wait until next turn.
-    while (!game_stream_.Wait()) {
-      if (game_stream_.LastStatus().error_code == kErrorNoCurrentRound) {
-        EndOfRound();
-        break;
-      }
-    }
-    if (current_round_ != last_current_round_) {
-      NewRound();
-      last_current_round_ = current_round_;
-    }
-    ++current_turn_;
+    WaitForNewTurn();
   }
 }
 
@@ -170,10 +159,18 @@ void Game::ChangeFuturePos(Pos new_pos) {
   }
 }
 
-void Game::EndOfRound() {
-  if (current_round_ == last_current_round_) {
-    ++current_round_;
+void Game::WaitForNewTurn() {
+  while (!game_stream_.Wait()) {
+    if (game_stream_.LastStatus().error_code == kErrorNoCurrentRound) {
+      ++current_round_;
+      break;
+    }
   }
+  if (current_round_ != last_current_round_) {
+    NewRound();
+    last_current_round_ = current_round_;
+  }
+  ++current_turn_;
 }
 void Game::NewRound() {
   player_.score = 0;

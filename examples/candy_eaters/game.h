@@ -24,21 +24,12 @@ class Game {
  private:
   // Run the actual logic of the program.
   void RunGame();
-
-  // Init visualizer window.
-  void InitVisualizer();
-
-  // Init toolbar window.
-  void InitToolbar();
-
   // If there is a candy, eat it, otherwise move to some neihbour cell.
   void Move(bool plan_future = false);
   void GetCurrentState();
-
   // Check if there was manual move done with keyboard and if yes, do it.
   // Returns true if move from player was received.
   bool ManualMove(bool plan_future);
-
   void DoMoveEatCandy(bool plan_future);
   void DoMoveMove(Pos new_pos, bool plan_future);
 
@@ -47,9 +38,13 @@ class Game {
   bool ValidMove(Pos from_pos, Pos to_pos);
   void ChangeFuturePos(Pos new_pos);
 
-  void EndOfRound();
+  void WaitForNewTurn();
   void NewRound();
 
+  // Init visualizer window.
+  void InitVisualizer();
+  // Init toolbar window.
+  void InitToolbar();
   void ProcessEvents();
   void Render();
 
