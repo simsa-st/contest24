@@ -278,10 +278,10 @@ cmd_project_new() {
   mkdir -p "$PROJECT_DIRECTORY"
   mkdir -p "$PROJECT_DIRECTORY/build"
   mkdir -p "$PROJECT_DIRECTORY/tmp"
+  if [[ -d "$PROJECT_DIRECTORY/project_name" ]] ; then
+    mv -i -v "$PROJECT_DIRECTORY/project_name" "$PROJECT_DIRECTORY/$PROJECT_NAME"
+  fi
   for file in `find $PROJECT_DIRECTORY` ; do
-    if [[ (-d $file) && (`basename $file` = "project_name") ]] ; then
-      mv -i -v $file `dirname $file`"/$PROJECT_NAME"
-    fi
     if [[ -f $file ]] ; then
       sed -i.bak "s/__PROJECT_NAME__/$PROJECT_NAME/g" $file
       rm "$file.bak"
