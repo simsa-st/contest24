@@ -8,9 +8,6 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 # about this project
 # --------------
 project(contest24___PROJECT_NAME__)
-set(VERSION_MAJOR 1)
-set(VERSION_MINOR 0)
-set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
 
 # set env
 # --------------
