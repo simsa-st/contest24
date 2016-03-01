@@ -1,4 +1,5 @@
 #include "communication/server_stream.h"
+#include "communication/status.h"
 #include "communication/stream.h"
 #include "communication/stream_backend_interface.h"
 #include "communication/stream_tcp.h"
