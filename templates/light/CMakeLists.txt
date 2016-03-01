@@ -44,7 +44,7 @@ if(SFML_FOUND)
   target_link_libraries(${client} ${SFML_LIBRARIES})
 endif()
 
-target_link_libraries(${solution} sfgui)
+target_link_libraries(${client} sfgui)
 
 # add subfolders
 # --------------
