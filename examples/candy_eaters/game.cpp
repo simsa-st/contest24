@@ -15,6 +15,9 @@ Game::Game(const string& host, int port)
     : game_stream_(GameStream(
           unique_ptr<StreamBackendInterface>(new StreamTcpClient(host, port)))),
       port_(port) {
+  if (!game_stream_.Authenticate(LOGIN, PASSWORD)) {
+    LOG(FATAL) << "Authentication failed";
+  }
   NewRound();
 }
 

@@ -22,6 +22,7 @@ class GameStream {
   Status LastStatus() const { return stream_.LastStatus(); }
   // Send WAIT and block until messages "OK, WAITING, OK" are received (or
   // until one of the messages is not as expected).
+  bool Authenticate(const string& login, const string& password);
   bool Wait();
   bool GetInit(int* n);
   bool GetMyPos(Pos* pos);

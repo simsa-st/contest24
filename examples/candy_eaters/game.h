@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 
+#include <glog/logging.h>
 #include <SFGUI/SFGUI.hpp>
 
 #include "c24/c24.h"
@@ -15,6 +16,9 @@ using c24::toolbar::ToolPrintVariables;
 
 #define WINDOW_SIZE 400
 #define TOOLBAR_WINDOW_SIZE 400
+
+#define LOGIN "login"
+#define PASSWORD "password"
 
 class Game {
  public:

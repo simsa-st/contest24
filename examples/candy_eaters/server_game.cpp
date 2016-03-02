@@ -16,6 +16,10 @@ ServerGame::ServerGame(vector<int> ports)
   ListenForPlayers(ports);
 }
 
+bool ServerGame::Authenticate(int pid, string login, string password) {
+  return pid >= 0 && !login.empty() && !password.empty();
+}
+
 void ServerGame::InitRound() {
   board_size_ = rand() % (MAX_BOARD_SIZE - MIN_BOARD_SIZE + 1) + MIN_BOARD_SIZE;
   board_ = Board<ServerCell>(board_size_);
@@ -26,10 +30,14 @@ void ServerGame::InitRound() {
     }
   }
 
-  player_.clear();
   for (int i = 0; i < num_players_; ++i) {
     Pos random_pos(rand() % board_size_, rand() % board_size_);
-    player_.push_back(random_pos);
+    if ((int)player_.size() <= i) {
+      player_.push_back(random_pos);
+    } else {
+      player_[i].player.pos = random_pos;
+      player_[i].player.score = 0;
+    }
     board_[random_pos].vis_players[i] = true;
   }
 
@@ -179,6 +187,10 @@ void ServerGame::SendOkToWaiting() {
 void ServerGame::GetNewCommands() {
   for (int p = 0; p < num_players_; ++p) {
     if (player_stream_[p].Connected()) {
+      if (player_[p].auth_state == kNone) {
+        player_stream_[p].SendMessage("LOGIN");
+        player_[p].auth_state = AuthState::kLoginSentToPlayer;
+      }
       if (!player_future_command_[p].valid()) {
         player_future_command_[p] = player_stream_[p].GetFutureMessage(
             cv_command_received_, &player_command_[p]);
@@ -194,6 +206,7 @@ void ServerGame::ProcessCommands() {
       player_[p].waiting = false;
       // Throw away any command coming from this player.
       player_future_command_[p] = std::future<void>();
+      player_[p].auth_state = AuthState::kNone;
       player_stream_[p].ConnectAgain();
     }
     if (player_stream_[p].Connected()) {
@@ -208,6 +221,26 @@ void ServerGame::ProcessCommands() {
 }
 
 void ServerGame::ProcessCommand(int pid, const string& msg) {
+  if (player_[pid].auth_state != AuthState::kAuthenticated) {
+    if (player_[pid].auth_state == AuthState::kLoginSentToPlayer) {
+      player_[pid].received_login = msg;
+      player_stream_[pid].SendMessage("PASSWORD");
+      player_[pid].auth_state = AuthState::kPasswordSentToPlayer;
+      return;
+    }
+    if (player_[pid].auth_state == AuthState::kPasswordSentToPlayer) {
+      player_[pid].received_password = msg;
+      if (Authenticate(pid, player_[pid].received_login, player_[pid].received_password)) {
+        player_stream_[pid].ReplyWithOk();
+        player_[pid].auth_state = AuthState::kAuthenticated;
+      } else {
+        player_stream_[pid].ReplyWithError(kAuthError);
+        player_[pid].auth_state = AuthState::kNone;
+      }
+      return;
+    }
+    return;
+  }
   if (no_current_round_) {
     player_stream_[pid].ReplyWithError(kNoCurrentRound);
     return;

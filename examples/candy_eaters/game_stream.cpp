@@ -3,6 +3,13 @@
 GameStream::GameStream(std::unique_ptr<StreamBackendInterface> stream_backend)
     : stream_(std::move(stream_backend)) {}
 
+bool GameStream::Authenticate(const string& login, const string& password) {
+  if (!stream_.GetMessageWithCheck("LOGIN")) return false;
+  if (!stream_.SendMessage(login)) return false;
+  if (!stream_.GetMessageWithCheck("PASSWORD")) return false;
+  return stream_.SendMessageWithCheck(password);
+}
+
 bool GameStream::Wait() {
   if (!stream_.SendMessageWithCheck("WAIT")) return false;
   if (!stream_.GetMessageWithCheck("WAITING")) return false;

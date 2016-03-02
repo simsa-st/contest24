@@ -25,7 +25,6 @@ using namespace std;
 
 #define WINDOW_SIZE 400
 
-
 // Server for Candy Eaters game. Communicates with all the players, replies to
 // their queries and manages the state of the game.
 class ServerGame {
@@ -34,6 +33,7 @@ class ServerGame {
   void Run();
   void RunWithVisualizer();
  private:
+  bool Authenticate(int pid, string login, string password);
   // Prepare the board and positions of all players before the start of new
   // round.
   void InitRound();
@@ -75,11 +75,12 @@ class ServerGame {
   void Render();
 
   // Error messages.
+  const pair<int, string> kAuthError = {1, "Incorrect login or password."};
+  const pair<int, string> kInvalidCommand = {3, "Unknown command name."};
   const pair<int, string> kWrongNumberOfArguments = {4, "Wrong number of arguments."};
   const pair<int, string> kNoCurrentRound = {9, "No current round."};
   const pair<int, string> kErrorOneMove = {101, "You can do only one move per turn."};
   const pair<int, string> kInvalidMove = {102, "Invalid move."};
-  const pair<int, string> kInvalidCommand = {103, "Invalid command."};
   const pair<int, string> kNoCandies = {104, "No candy on this position."};
 
   int num_players_;
