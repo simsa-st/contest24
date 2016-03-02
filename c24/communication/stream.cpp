@@ -56,9 +56,13 @@ bool Stream::GetMessageWithCheck(const char* expected) {
   std::string msg_ok = GetMessage();
   if (msg_ok != expected) {
     status_ = stream_backend_->LastStatus();
-    if (msg_ok.length() >= 11 && msg_ok.substr(0, 5) == "ERROR") {
-      int error_code = std::atoi(msg_ok.substr(6, 3).c_str());
-      status_.SetServerError(error_code, msg_ok.substr(11));
+    std::stringstream ss(msg_ok);
+    std::string first_word;
+    ss >> first_word;
+    int error_code;
+    ss >> error_code;
+    if (first_word == "ERROR") {
+      status_.SetServerError(error_code, ss.str());
     }
     LOG(ERROR) << "Expected \"" << expected << "\" but received \"" << msg_ok
                << "\"";

@@ -45,7 +45,7 @@ class Stream {
   // Get message and check it has the value "expected".
   // Also, if the received message is not correct, try to extract error from
   // the message. Error is expected to be in the format:
-  // ERROR xxx: error_message
+  // ERROR number error_message
   bool GetMessageWithCheck(const char* expected = "OK");
 
   // Send a message, then receive reply and check if it is equal to 'expected'.
