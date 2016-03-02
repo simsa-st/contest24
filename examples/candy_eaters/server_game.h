@@ -73,12 +73,12 @@ class ServerGame {
   void Render();
 
   // Error messages.
-  const pair<int, string> kErrorOneMove = {101, "YOU CAN DO ONLY ONE MOVE PER TURN"};
-  const pair<int, string> kInvalidMove = {102, "INVALID MOVE"};
-  const pair<int, string> kInvalidCommand = {103, "INVALID COMMAND"};
-  const pair<int, string> kTooManyArguments = {104, "TOO MANY ARGUMENTS"};
-  const pair<int, string> kNoCandies = {105, "NO CANDY ON THIS POSITION"};
-  const pair<int, string> kNoCurrentRound = {106, "NO CURRENT ROUND"};
+  const pair<int, string> kWrongNumberOfArguments = {4, "Wrong number of arguments."};
+  const pair<int, string> kNoCurrentRound = {9, "No current round."};
+  const pair<int, string> kErrorOneMove = {101, "You can do only one move per turn."};
+  const pair<int, string> kInvalidMove = {102, "Invalid move."};
+  const pair<int, string> kInvalidCommand = {103, "Invalid command."};
+  const pair<int, string> kNoCandies = {104, "No candy on this position."};
 
   int num_players_;
   int turn_length_milliseconds_;

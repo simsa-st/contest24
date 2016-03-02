@@ -89,7 +89,7 @@ class ServerStream {
   bool SendMessage(const std::string& msg);
   void ReplyWithOk() { SendMessage("OK"); }
   void ReplyWithError(int error_code, const std::string& error_msg) {
-    SendMessage("ERROR " + std::to_string(error_code) + ": " + error_msg);
+    SendMessage("ERROR " + std::to_string(error_code) + " " + error_msg);
   }
   void ReplyWithError(const std::pair<int, std::string>& error) {
     ReplyWithError(error.first, error.second);

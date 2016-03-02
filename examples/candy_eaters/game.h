@@ -63,7 +63,7 @@ class Game {
   ToolPrintVariables tool_print_variables_;
   std::unique_ptr<SfguiWindow> sfgui_window_;
 
-  const int kErrorNoCurrentRound = 106;
+  const int kErrorNoCurrentRound = 9;
 
   int port_;
 };

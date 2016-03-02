@@ -217,37 +217,37 @@ void ServerGame::ProcessCommand(int pid, const string& msg) {
   sstream >> cmd;
   if (cmd == "WAIT") {
     if (sstream.rdbuf()->in_avail() != 0) {
-      player_stream_[pid].ReplyWithError(kTooManyArguments);
+      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
     } else {
       CmdWait(pid);
     }
   } else if (cmd == "GET_INIT") {
     if (sstream.rdbuf()->in_avail() != 0) {
-      player_stream_[pid].ReplyWithError(kTooManyArguments);
+      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
     } else {
       CmdGetInit(pid);
     }
   } else if (cmd == "GET_MY_POS") {
     if (sstream.rdbuf()->in_avail() != 0) {
-      player_stream_[pid].ReplyWithError(kTooManyArguments);
+      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
     } else {
       CmdGetMyPos(pid);
     }
   } else if (cmd == "GET_MY_SCORE") {
     if (sstream.rdbuf()->in_avail() != 0) {
-      player_stream_[pid].ReplyWithError(kTooManyArguments);
+      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
     } else {
       CmdGetMyScore(pid);
     }
   } else if (cmd == "GET_CANDY_COUNT") {
     if (sstream.rdbuf()->in_avail() != 0) {
-      player_stream_[pid].ReplyWithError(kTooManyArguments);
+      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
     } else {
       CmdGetCandyCount(pid);
     }
   } else if (cmd == "EAT_CANDY") {
     if (sstream.rdbuf()->in_avail() != 0) {
-      player_stream_[pid].ReplyWithError(kTooManyArguments);
+      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
     } else {
       CmdEatCandy(pid);
     }
@@ -255,7 +255,7 @@ void ServerGame::ProcessCommand(int pid, const string& msg) {
     int x, y;
     sstream >> x >> y;
     if (sstream.rdbuf()->in_avail() != 0) {
-      player_stream_[pid].ReplyWithError(kTooManyArguments);
+      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
     } else {
       CmdMove(pid, Pos(x, y));
     }
