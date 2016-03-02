@@ -93,6 +93,10 @@ void VariableLabel<T>::HandleUpdate(float seconds) {
 //
 // Example usage:
 //
+// std::string print_player(Player p) { ... }
+//    .
+//    .
+//    .
 // sfg::Desktop desktop;
 //
 // int var1 = 10;
@@ -104,7 +108,7 @@ void VariableLabel<T>::HandleUpdate(float seconds) {
 // tool_print_variables.AddVariable("variable1", &var1, 0.01);
 // tool_print_variables.AddVariable("variable2", &var2, 0.01);
 // tool_print_variables.AddVariable("some_string_variables", &str, 0.05);
-// tool_print_variables.AddVariableCustomPrint("player", &player, 0.1);
+// tool_print_variables.AddVariableCustomPrint("player", &player, &print_player, 0.1);
 //
 // desktop.Add(tool_print_variables.WindowPtr());
 class ToolPrintVariables {
