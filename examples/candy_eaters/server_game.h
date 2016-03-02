@@ -62,9 +62,11 @@ class ServerGame {
   void ProcessCommand(int pid, const string& msg);
   // Individual commands.
   void CmdWait(int pid);
+  void CmdGetTime(int pid);
+  void CmdGetMyScore(int pid);
+  void CmdGetAllScores(int pid);
   void CmdGetInit(int pid);
   void CmdGetMyPos(int pid);
-  void CmdGetMyScore(int pid);
   void CmdGetCandyCount(int pid);
   void CmdEatCandy(int pid);
   void CmdMove(int pid, Pos pos);

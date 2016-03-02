@@ -221,6 +221,24 @@ void ServerGame::ProcessCommand(int pid, const string& msg) {
     } else {
       CmdWait(pid);
     }
+  } else if (cmd == "GET_TIME") {
+    if (sstream.rdbuf()->in_avail() != 0) {
+      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
+    } else {
+      CmdGetTime(pid);
+    }
+  } else if (cmd == "GET_MY_SCORE") {
+    if (sstream.rdbuf()->in_avail() != 0) {
+      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
+    } else {
+      CmdGetMyScore(pid);
+    }
+  } else if (cmd == "GET_ALL_SCORES") {
+    if (sstream.rdbuf()->in_avail() != 0) {
+      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
+    } else {
+      CmdGetAllScores(pid);
+    }
   } else if (cmd == "GET_INIT") {
     if (sstream.rdbuf()->in_avail() != 0) {
       player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
@@ -232,12 +250,6 @@ void ServerGame::ProcessCommand(int pid, const string& msg) {
       player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
     } else {
       CmdGetMyPos(pid);
-    }
-  } else if (cmd == "GET_MY_SCORE") {
-    if (sstream.rdbuf()->in_avail() != 0) {
-      player_stream_[pid].ReplyWithError(kWrongNumberOfArguments);
-    } else {
-      CmdGetMyScore(pid);
     }
   } else if (cmd == "GET_CANDY_COUNT") {
     if (sstream.rdbuf()->in_avail() != 0) {
@@ -269,6 +281,30 @@ void ServerGame::CmdWait(int pid) {
   player_stream_[pid].SendMessage("WAITING");
   player_[pid].waiting = true;
 }
+void ServerGame::CmdGetTime(int pid) {
+  player_stream_[pid].ReplyWithOk();
+  player_stream_[pid].SendMessage(to_string(current_round_) + " " + to_string(current_turn_) + " " + to_string(NUM_TURNS));
+}
+void ServerGame::CmdGetMyScore(int pid) {
+  player_stream_[pid].ReplyWithOk();
+  int score = player_[pid].player.score;
+  player_stream_[pid].SendMessage(to_string(score));
+}
+void ServerGame::CmdGetAllScores(int pid) {
+  vector<int> scores;
+  for (auto p : player_) {
+    scores.push_back(p.player.score);
+  }
+  sort(scores.begin(), scores.end());
+  string scores_str;
+  for (int i = 0; i < (int)scores.size(); ++i) {
+    if (i) scores_str.push_back(' ');
+    scores_str += to_string(scores[i]);
+  }
+  player_stream_[pid].ReplyWithOk();
+  player_stream_[pid].SendMessage(to_string(player_.size()));
+  player_stream_[pid].SendMessage(scores_str);
+}
 void ServerGame::CmdGetInit(int pid) {
   player_stream_[pid].ReplyWithOk();
   player_stream_[pid].SendMessage(to_string(board_size_));
@@ -278,11 +314,6 @@ void ServerGame::CmdGetMyPos(int pid) {
   Pos pos = player_[pid].pos();
   string pos_msg = to_string(pos.x()) + " " + to_string(pos.y());
   player_stream_[pid].SendMessage(pos_msg);
-}
-void ServerGame::CmdGetMyScore(int pid) {
-  player_stream_[pid].ReplyWithOk();
-  int score = player_[pid].player.score;
-  player_stream_[pid].SendMessage(to_string(score));
 }
 void ServerGame::CmdGetCandyCount(int pid) {
   player_stream_[pid].ReplyWithOk();
