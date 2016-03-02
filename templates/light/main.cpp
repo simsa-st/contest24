@@ -60,7 +60,8 @@ class Game {
   void Run(bool visualizer, bool toolbar);
 
  private:
-  const int kErrorNoCurrentRound = 106;
+  // TODO: Initialize this with the correct value.
+  const int kErrorNoCurrentRound = -1;
 
   // Run the actual logic of the program.
   void RunGame();
@@ -144,6 +145,9 @@ void Game::WaitForNewTurn() {
   ++current_turn_;
 }
 void Game::NewRound() {
+  // TODO: Put here and inside of the loop the first command that you want to
+  // send to the server when new round starts.
+
   // game_stream_.GetInit(&board_size_);
   while (game_stream_.LastStatus().error_code == kErrorNoCurrentRound) {
     std::this_thread::sleep_for(std::chrono::milliseconds(200));
