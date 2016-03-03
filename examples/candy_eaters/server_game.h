@@ -81,7 +81,7 @@ class ServerGame {
   const pair<int, string> kNoCurrentRound = {9, "No current round."};
   const pair<int, string> kErrorOneMove = {101, "You can do only one move per turn."};
   const pair<int, string> kInvalidMove = {102, "Invalid move."};
-  const pair<int, string> kNoCandies = {104, "No candy on this position."};
+  const pair<int, string> kNoCandies = {104, "No candy at this position."};
 
   int num_players_;
   int turn_length_milliseconds_;
