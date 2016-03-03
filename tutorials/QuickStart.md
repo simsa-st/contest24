@@ -83,6 +83,7 @@ bool Move(int x, int y) {
 Now we will create a method of the <code>Game</code> class that chooses a random neighbouring cell:
 <pre><code>void Game::ChooseWhereToMoveRandom(int x, int y, int* new_x, int* new_y) {
   *new_x = *new_y = -1;
+  if (x < 0 || x >= board_size || y < 0 || y >= board_size_) return;
   while (*new_x < 0 || *new_x >= board_size_ || *new_y < 0 || *new_y >= board_size_) {
     int random_dir = rand() % 4;
     *new_x = x; *new_y = y;
