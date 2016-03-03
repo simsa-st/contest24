@@ -61,8 +61,6 @@ for it on three different occasions.
 * Finally there is code that you write on the contest itself. Such an example
   can be found under <code>examples/candy_eaters/</code>.
 
-Here are a few tutorials to get you started.
+Here is a tutorial to get you started:
 * [Quick start, a.k.a. from the template light to a working
   example](tutorials/QuickStart.md)
-* [From template stepan-m24 to Candy Eaters example](tutorials/CandyEaters.md)
-* [Writing your own template](tutorials/CreatingTemplates.md)
