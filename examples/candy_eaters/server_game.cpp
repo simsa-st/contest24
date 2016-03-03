@@ -108,6 +108,7 @@ void ServerGame::RunWithVisualizer() {
       }
     }
     Render();
+    this_thread::sleep_for(chrono::milliseconds(10));
   }
   game.join();
 }

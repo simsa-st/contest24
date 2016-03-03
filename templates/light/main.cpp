@@ -1,3 +1,4 @@
+#include <chrono>
 #include <memory>
 #include <string>
 #include <thread>
@@ -112,6 +113,7 @@ void Game::Run(bool visualizer, bool toolbar) {
       sfgui_window_->ProcessEvents();
       sfgui_window_->Render();
     }
+    this_thread::sleep_for(chrono::milliseconds(10));
   }
   // Close the second window if it is still open.
   if (visualizer && window_->isOpen()) window_->close();
