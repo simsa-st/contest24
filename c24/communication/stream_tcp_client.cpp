@@ -1,6 +1,6 @@
 #include "c24/communication/stream_tcp_client.h"
 
-#include <glog/logging.h>
+#include "easylogging++.h"
 
 namespace c24 {
 namespace communication {

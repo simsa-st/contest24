@@ -3,7 +3,8 @@
 #include <chrono>
 #include <string>
 #include <thread>
-#include <glog/logging.h>
+
+#include "easylogging++.h"
 
 namespace c24 {
 namespace communication {

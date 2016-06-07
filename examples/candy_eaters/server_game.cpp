@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#include <glog/logging.h>
+#include "easylogging++.h"
 #include "c24/c24.h"
 
 using c24::communication::StreamBackendInterface;

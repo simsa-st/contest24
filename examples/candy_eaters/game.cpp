@@ -1,6 +1,8 @@
 #include "game.h"
 
 #include <thread>
+
+#include "easylogging++.h"
 #include <SFML/Graphics.hpp>
 
 std::string print_bool(bool x) {

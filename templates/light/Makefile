@@ -2,7 +2,7 @@ MY_SOURCES=main.cpp
 
 CXX=g++
 FLAGS=-std=c++11 -O3
-LIBS=-pthread -L/usr/local/lib -lgflags -lglog -lsfml-system -lsfml-window -lsfml-graphics -lsfml-network -lsfml-audio -lsfgui
+LIBS=-pthread -L/usr/local/lib -lgflags -lsfml-system -lsfml-window -lsfml-graphics -lsfml-network -lsfml-audio -lsfgui
 INC=-I .
 
 SOURCES_COMMUNICATION=$(wildcard c24/communication/*.cpp)

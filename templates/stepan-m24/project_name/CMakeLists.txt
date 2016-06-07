@@ -25,9 +25,6 @@ target_link_libraries(${client} toolbar)
 find_package(gflags REQUIRED)
 target_link_libraries(${client} gflags)
 
-find_package(glog REQUIRED)
-target_link_libraries(${client} glog)
-
 # Detect and add SFML
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 #Find any version 2.X of SFML

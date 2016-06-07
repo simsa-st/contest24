@@ -4,11 +4,13 @@
 #include <memory>
 #include <iostream>
 
-#include <glog/logging.h>
+#include "easylogging++.h"
 #include <gflags/gflags.h>
 #include "c24/communication/stream.h"
 #include "c24/communication/stream_tcp_client.h"
 #include "c24/communication/stream_backend_interface.h"
+
+INITIALIZE_EASYLOGGINGPP
 
 using c24::communication::StreamBackendInterface;
 using c24::communication::StreamTcpClient;
@@ -19,7 +21,6 @@ DEFINE_string(host, "127.0.0.1",
 DEFINE_int32(port, 5500, "Define port number to which do you want to connect.");
 
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(*argv);
   google::ParseCommandLineFlags(&argc, &argv, true);
   Stream stream(std::unique_ptr<StreamBackendInterface>(
       new StreamTcpClient(FLAGS_host, FLAGS_port)));

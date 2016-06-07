@@ -1,7 +1,6 @@
 #include "cell.h"
 
 #include <algorithm>
-#include <glog/logging.h>
 
 void Cell::draw(sf::RenderTarget& target, sf::RenderStates states) const {
   // apply the transform

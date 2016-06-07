@@ -4,10 +4,12 @@
 #include <thread>
 
 #include "c24/c24.h"
-#include <glog/logging.h>
+#include "easylogging++.h"
 #include <gflags/gflags.h>
 #include <SFGUI/SFGUI.hpp>
 #include <SFML/Graphics.hpp>
+INITIALIZE_EASYLOGGINGPP
+
 using namespace std;
 using c24::communication::Status;
 using c24::communication::Stream;
@@ -188,7 +190,6 @@ void Game::Render() {
 }
 
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(*argv);
   google::ParseCommandLineFlags(&argc, &argv, true);
 
   int seed = FLAGS_seed;

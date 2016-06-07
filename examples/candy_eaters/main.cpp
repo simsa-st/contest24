@@ -1,7 +1,10 @@
-#include <glog/logging.h>
 #include <gflags/gflags.h>
 
+#include "easylogging++.h"
+
 #include "game.h"
+
+INITIALIZE_EASYLOGGINGPP
 
 DEFINE_string(host, "127.0.0.1", "Host for tcp communication.");
 DEFINE_int32(port, 5500, "Port for tcp communication.");
@@ -11,7 +14,6 @@ DEFINE_int32(seed, -1,
              "Seed used in srand. If negative (default), time(NULL) is used.");
 
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(*argv);
   google::ParseCommandLineFlags(&argc, &argv, true);
 
   int seed = FLAGS_seed;

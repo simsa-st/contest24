@@ -26,9 +26,6 @@ target_link_libraries(${solution} toolbar)
 find_package(gflags REQUIRED)
 target_link_libraries(${solution} gflags)
 
-find_package(glog REQUIRED)
-target_link_libraries(${solution} glog)
-
 target_link_libraries(${solution} sfgui)
 
 # Detect and add SFML
@@ -65,8 +62,6 @@ target_link_libraries(${server} communication)
 find_package(gflags REQUIRED)
 target_link_libraries(${server} gflags)
 
-find_package(glog REQUIRED)
-target_link_libraries(${server} glog)
 if(SFML_FOUND)
   include_directories(${SFML_INCLUDE_DIR})
   target_link_libraries(${server} ${SFML_LIBRARIES})

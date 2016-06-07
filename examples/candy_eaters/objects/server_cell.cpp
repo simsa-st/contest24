@@ -1,7 +1,5 @@
 #include "server_cell.h"
 
-#include <glog/logging.h>
-
 void ServerCell::draw(sf::RenderTarget& target, sf::RenderStates states) const {
   // apply the transform
   states.transform *= getTransform();

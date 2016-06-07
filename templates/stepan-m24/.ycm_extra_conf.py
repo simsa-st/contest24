@@ -72,8 +72,8 @@ flags = [
 '-isystem', './tests/gmock/include',
 # Contest24 project
 '-I', './c24/extern/gflags-master/src',
-'-I', './c24/extern/google-glog-master/src',
-'-I', '/home/gorli/projects/contest24'
+'-I', '/home/gorli/projects/contest24',
+'-I', './c24/extern'
 ]
 
 

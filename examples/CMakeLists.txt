@@ -12,9 +12,6 @@ target_link_libraries(${tcp_client} communication)
 find_package(gflags REQUIRED)
 target_link_libraries(${tcp_client} gflags)
 
-find_package(glog REQUIRED)
-target_link_libraries(${tcp_client} glog)
-
 # tcp_server
 set(tcp_server ${PROJECT_NAME}_tcp_server)
 set(${tcp_server}_sources tcp_server.cpp)
@@ -24,9 +21,6 @@ target_link_libraries(${tcp_server} communication)
 
 find_package(gflags REQUIRED)
 target_link_libraries(${tcp_server} gflags)
-
-find_package(glog REQUIRED)
-target_link_libraries(${tcp_server} glog)
 
 # add subfolders
 # --------------

@@ -4,7 +4,6 @@
 #include <string>
 #include <memory>
 
-#include <glog/logging.h>
 #include <SFGUI/SFGUI.hpp>
 
 #include "c24/c24.h"

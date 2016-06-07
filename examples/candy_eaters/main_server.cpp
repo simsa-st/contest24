@@ -1,9 +1,11 @@
 #include <string>
 #include <sstream>
 
-#include <glog/logging.h>
+#include "easylogging++.h"
 #include <gflags/gflags.h>
 #include "server_game.h"
+
+INITIALIZE_EASYLOGGINGPP
 
 using namespace std;
 
@@ -16,7 +18,6 @@ DEFINE_int32(seed, -1,
 DEFINE_bool(vis, false, "Start with visualizer.");
 
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(*argv);
   google::ParseCommandLineFlags(&argc, &argv, true);
 
   int seed = FLAGS_seed;

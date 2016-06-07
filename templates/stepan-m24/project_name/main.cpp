@@ -1,7 +1,8 @@
-#include <glog/logging.h>
+#include "easylogging++.h"
 #include <gflags/gflags.h>
 
 #include "game.h"
+INITIALIZE_EASYLOGGINGPP
 
 #define PORT_FIRST_SERVER 5500
 #define PORT_SECOND_SERVER 5510
@@ -15,7 +16,6 @@ DEFINE_int32(seed, -1,
 DEFINE_int32(server, -1, "On which server we play.");
 
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(*argv);
   google::ParseCommandLineFlags(&argc, &argv, true);
 
   int seed = FLAGS_seed;

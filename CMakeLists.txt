@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DELPP_THREAD_SAFE -pthread")
+
 # Building should happen in build/ directory. Add this options before PROJECT
 # keyword.
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
@@ -15,6 +17,7 @@ set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
 # set env
 # --------------
 include_directories("${PROJECT_SOURCE_DIR}")
+include_directories("${PROJECT_SOURCE_DIR}/c24/extern")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # add subfolders
