@@ -72,6 +72,7 @@ flags = [
 '-isystem', './tests/gmock/include',
 # Contest24 project
 '-I', './c24/extern/gflags-master/src',
+'-I', './c24/extern/gflags-master/build/include',
 '-I', './c24/extern'
 ]
 

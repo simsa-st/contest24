@@ -2,7 +2,7 @@
 #include <sstream>
 
 #include "easylogging++.h"
-#include <gflags/gflags.h>
+#include "gflags/gflags.h"
 #include "server_game.h"
 
 INITIALIZE_EASYLOGGINGPP

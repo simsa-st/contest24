@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "easylogging++.h"
-#include <gflags/gflags.h>
+#include "gflags/gflags.h"
 #include "c24/communication/stream.h"
 #include "c24/communication/stream_tcp_client.h"
 #include "c24/communication/stream_backend_interface.h"

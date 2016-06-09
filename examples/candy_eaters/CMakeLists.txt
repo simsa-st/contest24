@@ -23,8 +23,7 @@ add_executable(${solution} ${${solution}_sources})
 target_link_libraries(${solution} communication)
 target_link_libraries(${solution} toolbar)
 
-find_package(gflags REQUIRED)
-target_link_libraries(${solution} gflags)
+target_link_libraries(${solution} gflags-static)
 
 target_link_libraries(${solution} sfgui)
 
@@ -59,8 +58,7 @@ set(${server}_sources
 add_executable(${server} ${${server}_sources})
 target_link_libraries(${server} communication)
 
-find_package(gflags REQUIRED)
-target_link_libraries(${server} gflags)
+target_link_libraries(${server} gflags-static)
 
 if(SFML_FOUND)
   include_directories(${SFML_INCLUDE_DIR})
