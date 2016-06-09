@@ -18,6 +18,7 @@ set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
 # --------------
 include_directories("${PROJECT_SOURCE_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}/c24/extern")
+include_directories("${PROJECT_SOURCE_DIR}/c24/extern/SFGUI-0.3.0/include")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # add subfolders

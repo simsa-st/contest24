@@ -12,6 +12,8 @@ project(contest24___PROJECT_NAME__)
 # set env
 # --------------
 include_directories("${PROJECT_SOURCE_DIR}")
+include_directories("${PROJECT_SOURCE_DIR}/c24/extern")
+include_directories("${PROJECT_SOURCE_DIR}/c24/extern/SFGUI-0.3.0/include")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # --------------
 add_subdirectory(c24)

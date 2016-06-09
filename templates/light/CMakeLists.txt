@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DELPP_THREAD_SAFE -pthread")
+
 # Building should happen in build/ directory. Add this options before PROJECT
 # keyword.
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
@@ -12,6 +14,8 @@ project(contest24___PROJECT_NAME__)
 # set env
 # --------------
 include_directories("${PROJECT_SOURCE_DIR}")
+include_directories("${PROJECT_SOURCE_DIR}/c24/extern")
+include_directories("${PROJECT_SOURCE_DIR}/c24/extern/SFGUI-0.3.0/include")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
@@ -27,9 +31,8 @@ set(${client}_sources
 add_executable(${client} ${${client}_sources})
 target_link_libraries(${client} communication)
 target_link_libraries(${client} toolbar)
-
-find_package(gflags REQUIRED)
-target_link_libraries(${client} gflags)
+target_link_libraries(${client} gflags-static)
+target_link_libraries(${client} sfgui)
 
 # Detect and add SFML
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
@@ -40,8 +43,6 @@ if(SFML_FOUND)
   include_directories(${SFML_INCLUDE_DIR})
   target_link_libraries(${client} ${SFML_LIBRARIES})
 endif()
-
-target_link_libraries(${client} sfgui)
 
 # add subfolders
 # --------------
