@@ -5,8 +5,11 @@ c24/extern/*/build/*
 # Vim temp files
 *.swp
 
-# vim you complete me config file compiled
-.ycm_extra_conf.pyc
+# vim you complete me file anywhere but in templates
+*.ycm_extra_conf.py
+!templates/*.ycm_extra_conf.py
+# vim you complete me config file compiled everywhere
+*.ycm_extra_conf.pyc
 
 # Compiled Object files
 *.slo
