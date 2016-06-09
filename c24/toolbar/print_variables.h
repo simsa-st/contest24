@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include <SFGUI/SFGUI.hpp>
-#include <SFGUI/Widgets.hpp>
+#include "SFGUI/SFGUI.hpp"
+#include "SFGUI/Widgets.hpp"
 
 namespace c24 {
 namespace toolbar {

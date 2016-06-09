@@ -6,7 +6,7 @@
 #include "c24/c24.h"
 #include "easylogging++.h"
 #include <gflags/gflags.h>
-#include <SFGUI/SFGUI.hpp>
+#include "SFGUI/SFGUI.hpp"
 #include <SFML/Graphics.hpp>
 INITIALIZE_EASYLOGGINGPP
 

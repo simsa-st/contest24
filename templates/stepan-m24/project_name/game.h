@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include <SFGUI/SFGUI.hpp>
+#include "SFGUI/SFGUI.hpp"
 
 #include "c24/c24.h"
 #include "game_stream.h"
