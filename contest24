@@ -7,19 +7,20 @@
 # create new projects from templates, set the default flags for your
 # client/server etc.
 #
-# Before using this script, change the LIBRARY_DIR and CONFIG_DIR variables
-# below. Also change the TIMEOUT_COMMAND variable if you want to limit the
-# memory usage of your client/server.
+# You can change the TIMEOUT_COMMAND variable if you want to limit the memory
+# usage of your client/server.
 #
 # The usual workflow is as follows:
 # Create a new project from template my_template:
-# $ c24 project new my_project new_folder my_template
-# This copies the files from the template in new_folder and also the most
-# recent version of c24 library (if its older/different copy is not already
-# present in the template). It also renames the folder "project_name" in to the
-# template to the project_name you specified (my_project) and substitues
-# __PROJECT_NAME__ in all the files for the project_name.
+# $ c24 project new my_project directory_with_template new_project_directory
+# This copies the files from the template in new_project_directory and also the
+# most recent version of c24 library (if its older/different copy is not
+# already present in the template). It also renames the folder "project_name"
+# in to the template to the project_name you specified (my_project) and
+# substitues __PROJECT_NAME__ in all the files for the project_name.
+#
 # Now we will check the current configuration:
+# $ cd new_project_directory
 # $ c24 config show
 # This will print some variables and their respective values. If we decide to
 # change some, we run:
@@ -29,54 +30,43 @@
 # $ c24 client --port=5500
 
 
-### Settings ###
-# Change this to the path where is the downloaded repository
-# https://github.com/simsa-st/contest24.
-LIBRARY_DIR="/home/gorli/projects/contest24"
-# Change this to a directory where this script can store its configuration
-# files.
-CONFIG_DIR="/home/gorli/.contest24"
-mkdir -p $CONFIG_DIR
-
 # If you want to limit memory usage of your client/server, set this variable to
 # the timeout script that you can download here
 # https://github.com/pshved/timeout.
 TIMEOUT_COMMAND="time-out"
 
-# Filename/file where is stored the name of the current project.
-current_project_filename="current_project"
-current_project_file=$CONFIG_DIR"/"$current_project_filename
-# Directory that contains the templates.
-templates_directory=$LIBRARY_DIR"/templates"
-# Filename/file where is stored the default configuration for new projects
-default_config_filename="default_config"
-default_config_file=$CONFIG_DIR"/"$default_config_filename
+project_dir=`pwd`
+while [[ (! $project_dir == "/") && (! -d $project_dir/.contest24) ]] ; do
+  project_dir=`dirname $project_dir`
+done
+if [[ $project_dir == "/" ]] ; then
+  project_dir=""
+fi
+
+set_config_dir() {
+  config_dir="$project_dir/.contest24"
+  # Filename/file where is stored the configuration for the project
+  config_filename="config"
+  config_file=$config_dir"/"$config_filename
+}
+set_config_dir
 # Variables that can be set in the config file.
-config_variables="PROJECT_DIRECTORY CLIENT_BINARY CLIENT_DEFAULT_FLAGS
-                  SERVER_BINARY SERVER_DEFAULT_FLAGS CLIENT_MEMORY_LIMIT
-                  SERVER_MEMORY_LIMIT"
+config_variables="CLIENT_BINARY CLIENT_DEFAULT_FLAGS SERVER_BINARY
+                  SERVER_DEFAULT_FLAGS CLIENT_MEMORY_LIMIT SERVER_MEMORY_LIMIT"
 
 ### Usage ###
-usage="$0 project new project_name project_directory [template]
-$0 project change project_name
-$0 project show
-$0 project forget project_name
+usage="$0 project new project_name template_directory project_directory
 $0 config show
 $0 config set variable_name value
 $0 client [...additional_flags]
 $0 server from_port [to_port] [...additional_flags]
 "'
 project new:    Create new project with name "project_name" in the specified
-                directory. This directory needs to be empty if it exists. If
-                the template is specified it is copied to this directory. If
-                the template does not contain a copy of the library, the most
-                recent version is copied here. For more details on templates,
-                see the documentation of Contest24 project.
-project change: Change the current project to "project_name".
-project show:   Show all projects. The current one is preceeded with *.
-project forget: Forget the specified project. Does not delete the project
-                files, it just forgets about the project existance and its
-                configuration.
+                directory. This directory needs to be empty if it exists. The
+                template is copied to this directory. If the template does not
+                contain a copy of the library, the most recent version is
+                copied here. For more details on templates, see the
+                documentation of Contest24 project.
 config show:    Show the current config variables.
 config set:     Change the value of some config variable. Variable name is case
                 sensitive.
@@ -108,12 +98,8 @@ load_current_configuration() {
     eval $var="$val"
   done < $1
 }
-change_current_project() {
-  PROJECT_NAME=$1
-  echo $PROJECT_NAME > $current_project_file
-}
 cmd_config_show() {
-  cat $current_config_file
+  cat $config_file
 }
 change_variable() {
   if [[ $# -lt 1 ]] ; then
@@ -123,7 +109,7 @@ change_variable() {
   shift
   value='"$@"'
   eval $variable="$value"
-  store_current_configuration $current_config_file
+  store_current_configuration $config_file
 }
 cmd_config() {
   if [[ $# -eq 0 ]] ; then
@@ -171,11 +157,12 @@ cmd_run_server() {
 }
 
 create_default_config_file() {
-  touch $default_config_file
-  echo "CLIENT_MEMORY_LIMIT \"-1\"" >> $default_config_file
-  echo "CLIENT_DEFAULT_FLAGS \"--logbuflevel=-1 --stderrthreshold=0 --vis --toolbar\"" >> $default_config_file
-  echo "SERVER_MEMORY_LIMIT \"-1\"" >> $default_config_file
-  echo "SERVER_DEFAULT_FLAGS \"--logbuflevel=-1 --vis\"" >> $default_config_file
+  mkdir -p $config_dir
+  touch $config_file
+  echo "CLIENT_MEMORY_LIMIT \"-1\"" >> $config_file
+  echo "CLIENT_DEFAULT_FLAGS \"--vis --toolbar\"" >> $config_file
+  echo "SERVER_MEMORY_LIMIT \"-1\"" >> $config_file
+  echo "SERVER_DEFAULT_FLAGS \"--vis\"" >> $config_file
 }
 
 error_wrong_number_of_arguments() {
@@ -188,147 +175,68 @@ error_unknown_command() {
 }
 error_no_current_project() {
   echo "error: no current project"
-  echo "create new project or set current project with:"
-  echo "contest24 project new/change project_name"
   exit 0
 }
 error_no_config_file() {
-  echo "error: config file of current project ($PROJECT_NAME) not found"
-  exit 0
-}
-error_project_already_exists() {
-  echo "error: project $PROJECT_NAME already exists. Use project change instead of project new"
+  echo "error: config file $config_file not found"
   exit 0
 }
 error_project_directory_not_empty() {
   echo "error: cannot create project $PROJECT_NAME in directory $PROJECT_DIRECTORY because it is not empty"
   exit 0
 }
-error_no_such_template() {
-  echo "error: could not find template $1 in the templates directory $templates_directory/"
+error_not_a_template() {
+  echo "error: not a proper template directory $TEMPLATE_DIRECTORY"
   exit 0
-}
-error_project_doesnt_exist() {
-  echo "error: project $1 doesnt exist. Use project new to create it"
-  exit 0
-}
-
-get_list_of_projects() {
-  list_of_projects=""
-  for file in `ls $CONFIG_DIR` ; do
-    if [[ ! $file = $current_project_filename && ! $file = $default_config_filename ]] ; then
-      if [[ ! -z $list_of_projects ]] ; then
-        list_of_projects="$list_of_projects "
-      fi
-      list_of_projects=$list_of_projects$file
-    fi
-  done
-}
-project_exists() {
-  get_list_of_projects
-  [[ $list_of_projects == *"$1"* ]]
-  return $?
-}
-get_list_of_templates() {
-  list_of_templates=""
-  templates_folders=`ls -d $templates_directory/*/`
-  for dir in $templates_folders ; do
-    if [[ ! -z $list_of_templates ]] ; then
-      list_of_templates="$list_of_templates "
-    fi
-    b_dir=`basename $dir`
-    list_of_templates=$list_of_templates$b_dir
-  done
-}
-template_exists() {
-  get_list_of_templates
-  [[ $list_of_templates == *"$1"* ]]
-  return $?
 }
 
 cmd_project_new() {
-  if [[ $# -ne 2 && $# -ne 3 ]] ; then
+  if [[ $# -ne 3 ]] ; then
     error_wrong_number_of_arguments
   fi
-  get_list_of_projects
   PROJECT_NAME=$1
-  PROJECT_DIRECTORY=`realpath $2`
-  template=$3
-  if (project_exists $PROJECT_NAME) ; then
-    error_project_already_exists
-  fi
-  if [[ (-d $PROJECT_DIRECTORY) && (! -z "`ls -A $PROJECT_DIRECTORY`") ]] ; then
+  TEMPLATE_DIRECTORY=`realpath $2`
+  project_dir=`realpath $3`
+  set_config_dir
+  if [[ (-d $project_dir) && (! -z "`ls -A $project_dir`") ]] ; then
     error_project_directory_not_empty
   fi
-  if ([[ -n $template ]] && (! template_exists $template)) ; then
-    error_no_such_template $template
+  library_dir=$(dirname $(dirname $TEMPLATE_DIRECTORY))
+  if [[ (! -d $TEMPLATE_DIRECTORY) || (! -d $library_dir/c24 ) ]] ; then
+    error_not_a_template
   fi
-  change_current_project $PROJECT_NAME
-  load_current_configuration $default_config_file
-  current_config_file=$CONFIG_DIR/$PROJECT_NAME
-  CLIENT_BINARY="$PROJECT_DIRECTORY/build/bin/$PROJECT_NAME"
-  SERVER_BINARY="$PROJECT_DIRECTORY/build/bin/$PROJECT_NAME""_server"
-  log_dir="$PROJECT_DIRECTORY/tmp"
+  if [[ ! -f $config_file ]] ; then
+    create_default_config_file
+  fi
+  load_current_configuration $config_file
+  CLIENT_BINARY="$project_dir/build/bin/$PROJECT_NAME"
+  SERVER_BINARY="$project_dir/build/bin/$PROJECT_NAME""_server"
+  log_dir="$project_dir/tmp"
   change_variable CLIENT_DEFAULT_FLAGS "$CLIENT_DEFAULT_FLAGS --log_dir=$log_dir"
-  store_current_configuration $current_config_file
+  store_current_configuration $config_file
 
-  if [[ -n $template ]] ; then
-    cp -r $templates_directory/$template $PROJECT_DIRECTORY
+  if [[ ! -d $project_dir ]] ; then
+    mkdir -p $project_dir
   fi
-  mkdir -p "$PROJECT_DIRECTORY"
-  mkdir -p "$PROJECT_DIRECTORY/build"
-  mkdir -p "$PROJECT_DIRECTORY/tmp"
-  if [[ -d "$PROJECT_DIRECTORY/project_name" ]] ; then
-    mv -i -v "$PROJECT_DIRECTORY/project_name" "$PROJECT_DIRECTORY/$PROJECT_NAME"
+  cp -r "$TEMPLATE_DIRECTORY/." $project_dir/
+  mkdir -p "$project_dir/build"
+  mkdir -p "$project_dir/tmp"
+  if [[ -d "$project_dir/project_name" ]] ; then
+    mv -i -v "$project_dir/project_name" "$project_dir/$PROJECT_NAME"
   fi
-  for file in `find $PROJECT_DIRECTORY` ; do
+  for file in `find $project_dir` ; do
     if [[ -f $file ]] ; then
       sed -i.bak "s/__PROJECT_NAME__/$PROJECT_NAME/g" $file
       rm "$file.bak"
     fi
   done
-  if [[ -d $PROJECT_DIRECTORY"/c24" ]] ; then
+  if [[ -d $project_dir"/c24" ]] ; then
     echo "own version of library c24 found in the template"
-    echo "to check the difference between the most updated version run: diff -r $LIBRARY_DIR/c24 $PROJECT_DIRECTORY/c24"
+    echo "to check the difference between the most updated version run: diff -r $library_dir/c24 $project_dir/c24"
   else
-    echo "copying current version of library c24 from: $LIBRARY_DIR/c24"
-    cp -r $LIBRARY_DIR"/c24" $PROJECT_DIRECTORY
+    echo "copying current version of library c24 from: $library_dir/c24"
+    cp -r $library_dir"/c24" $project_dir
   fi
-}
-cmd_project_change() {
-    if [[ $# -ne 1 ]] ; then
-      error_wrong_number_of_arguments
-    fi
-    PROJECT_NAME=$1
-    if (! project_exists $PROJECT_NAME) ; then
-      error_project_doesnt_exist $PROJECT_NAME
-    fi
-    change_current_project $PROJECT_NAME
-}
-cmd_project_show() {
-  for file in `ls $CONFIG_DIR` ; do
-    if [[ $file = $current_project_filename || $file = $default_config_filename ]] ; then
-      continue
-    fi
-    if [[ $file = $PROJECT_NAME ]] ; then
-      echo "* "$file
-    else
-      echo "  "$file
-    fi
-  done
-}
-cmd_project_forget() {
-  if [[ $# -ne 1 ]] ; then
-    error_wrong_number_of_arguments
-  fi
-  forget_project_name=$1
-  if (! project_exists $forget_project_name) ; then
-    error_project_doesnt_exist $forget_project_name
-  fi
-  if [[ $PROJECT_NAME == $forget_project_name ]] ; then
-    rm "$current_project_file"
-  fi
-  rm "$CONFIG_DIR/$forget_project_name"
 }
 cmd_project() {
   if [[ $# -lt 1 ]] ; then
@@ -338,12 +246,6 @@ cmd_project() {
   shift
   if [ $cmd == "new" ] ; then
     cmd_project_new $@
-  elif [ $cmd == "change" ] ; then
-    cmd_project_change $@
-  elif [ $cmd == "show" ] ; then
-    cmd_project_show
-  elif [ $cmd == "forget" ] ; then
-    cmd_project_forget $@
   else
     error_unknown_command
   fi
@@ -353,18 +255,11 @@ cmd_project() {
 if [[ $# -eq 0 ]] ; then
   error_wrong_number_of_arguments
 fi
-if [[ $1 = "help" || $1 = "-help" || $1 = "--help" ]] ; then
+if [[ $1 = "help" || $1 = "-h" || $1 = "-help" || $1 = "--help" ]] ; then
   show_usage_and_exit
 else
   primary_cmd=$1
   shift
-fi
-
-if [ ! -f $default_config_file ] ; then create_default_config_file ; fi
-
-PROJECT_NAME=""
-if [ -f $current_project_file ] ; then
-  read PROJECT_NAME < $current_project_file
 fi
 
 if [ $primary_cmd == "project" ] ; then
@@ -372,15 +267,11 @@ if [ $primary_cmd == "project" ] ; then
   exit 0
 fi
 
-if [[ -z $PROJECT_NAME ]] ; then
+if [[ -z $project_dir ]] ; then
   error_no_current_project
 fi
 
-current_config_file=$CONFIG_DIR"/"$PROJECT_NAME
-if [[ ! -f $current_config_file ]] ; then
-  error_no_config_file
-fi
-load_current_configuration $current_config_file
+load_current_configuration $config_file
 
 if [ "$primary_cmd" = "client" ] ; then
   cmd_run_client $@
