@@ -1,9 +1,9 @@
 MY_SOURCES=main.cpp
 
 CXX=g++
-FLAGS=-std=c++11 -O3
+FLAGS=-std=c++11 -O3 -DELPP_THREAD_SAFE
 LIBS=-pthread -L/usr/local/lib -lgflags -lsfml-system -lsfml-window -lsfml-graphics -lsfml-network -lsfml-audio -lsfgui
-INC=-I .
+INC=-I . -I c24/extern -I c24/extern/SFGUI-0.3.0/include
 
 SOURCES_COMMUNICATION=$(wildcard c24/communication/*.cpp)
 OBJECTS_COMMUNICATION=$(patsubst c24/communication/%.cpp, build/%.o, $(SOURCES_COMMUNICATION))

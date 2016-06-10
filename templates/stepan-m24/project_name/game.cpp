@@ -3,7 +3,7 @@
 #include <chrono>
 #include <thread>
 
-#include "easylogging.h"
+#include "easylogging++.h"
 #include <SFML/Graphics.hpp>
 
 using c24::communication::StreamBackendInterface;
