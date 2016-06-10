@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DELPP_THREAD_SAFE -pthread")
+add_definitions(-DELPP_THREAD_SAFE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 
 # Building should happen in build/ directory. Add this options before PROJECT
 # keyword.

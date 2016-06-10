@@ -1,6 +1,7 @@
 # The game client
 project(__PROJECT_NAME__)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2")
+add_definitions(-DELPP_THREAD_SAFE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -pthread")
 set(client ${PROJECT_NAME})
 
 set(objects_sources
@@ -21,9 +22,8 @@ set(${client}_sources
 add_executable(${client} ${${client}_sources})
 target_link_libraries(${client} communication)
 target_link_libraries(${client} toolbar)
-
-find_package(gflags REQUIRED)
-target_link_libraries(${client} gflags)
+target_link_libraries(${client} gflags-static)
+target_link_libraries(${client} sfgui)
 
 # Detect and add SFML
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
@@ -34,5 +34,3 @@ if(SFML_FOUND)
   include_directories(${SFML_INCLUDE_DIR})
   target_link_libraries(${client} ${SFML_LIBRARIES})
 endif()
-
-target_link_libraries(${client} sfgui)
