@@ -21,7 +21,7 @@ using c24::toolbar::ToolPrintVariables;
 #define WINDOW_SIZE 400
 #define TOOLBAR_WINDOW_SIZE 200
 
-DEFINE_string(host, "127.0.0.1", "Host for tcp communication.");
+DEFINE_string(host_server, "127.0.0.1", "Host for tcp communication.");
 DEFINE_int32(port, 5500, "Port for tcp communication.");
 DEFINE_bool(vis, false, "Start with visualizer.");
 DEFINE_bool(toolbar, false, "Start with toolbar.");
@@ -196,7 +196,7 @@ int main(int argc, char** argv) {
   if (seed < 0) seed = time(NULL);
   srand(seed);
 
-  Game game(FLAGS_host, FLAGS_port);
+  Game game(FLAGS_host_server, FLAGS_port);
   game.Run(FLAGS_vis, FLAGS_toolbar);
   return 0;
 }

@@ -16,14 +16,14 @@ using c24::communication::StreamBackendInterface;
 using c24::communication::StreamTcpClient;
 using c24::communication::Stream;
 
-DEFINE_string(host, "127.0.0.1",
+DEFINE_string(host_server, "127.0.0.1",
               "Define hostname to which do you want to connect.");
 DEFINE_int32(port, 5500, "Define port number to which do you want to connect.");
 
 int main(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
   Stream stream(std::unique_ptr<StreamBackendInterface>(
-      new StreamTcpClient(FLAGS_host, FLAGS_port)));
+      new StreamTcpClient(FLAGS_host_server, FLAGS_port)));
   stream.SendMessage("HELLO SERVER");
   std::cout << stream.GetMessage() << std::endl;
 
