@@ -189,11 +189,11 @@ void ServerGame::GetNewCommands() {
   for (int p = 0; p < num_players_; ++p) {
     if (player_stream_[p].Connected()) {
       if (player_[p].auth_state == kNone) {
-        player_stream_[p].SendMessage("LOGIN");
+        player_stream_[p].SendMsg("LOGIN");
         player_[p].auth_state = AuthState::kLoginSentToPlayer;
       }
       if (!player_future_command_[p].valid()) {
-        player_future_command_[p] = player_stream_[p].GetFutureMessage(
+        player_future_command_[p] = player_stream_[p].GetFutureMsg(
             cv_command_received_, &player_command_[p]);
       }
     }
@@ -225,7 +225,7 @@ void ServerGame::ProcessCommand(int pid, const string& msg) {
   if (player_[pid].auth_state != AuthState::kAuthenticated) {
     if (player_[pid].auth_state == AuthState::kLoginSentToPlayer) {
       player_[pid].received_login = msg;
-      player_stream_[pid].SendMessage("PASSWORD");
+      player_stream_[pid].SendMsg("PASSWORD");
       player_[pid].auth_state = AuthState::kPasswordSentToPlayer;
       return;
     }
@@ -312,17 +312,19 @@ void ServerGame::ProcessCommand(int pid, const string& msg) {
 
 void ServerGame::CmdWait(int pid) {
   player_stream_[pid].ReplyWithOk();
-  player_stream_[pid].SendMessage("WAITING");
+  player_stream_[pid].SendMsg("WAITING");
   player_[pid].waiting = true;
 }
 void ServerGame::CmdGetTime(int pid) {
   player_stream_[pid].ReplyWithOk();
-  player_stream_[pid].SendMessage(to_string(current_round_) + " " + to_string(current_turn_) + " " + to_string(NUM_TURNS));
+  player_stream_[pid].SendMsg(to_string(current_round_) + " " +
+                              to_string(current_turn_) + " " +
+                              to_string(NUM_TURNS));
 }
 void ServerGame::CmdGetMyScore(int pid) {
   player_stream_[pid].ReplyWithOk();
   int score = player_[pid].player.score;
-  player_stream_[pid].SendMessage(to_string(score));
+  player_stream_[pid].SendMsg(to_string(score));
 }
 void ServerGame::CmdGetAllScores(int pid) {
   vector<int> scores;
@@ -336,22 +338,22 @@ void ServerGame::CmdGetAllScores(int pid) {
     scores_str += to_string(scores[i]);
   }
   player_stream_[pid].ReplyWithOk();
-  player_stream_[pid].SendMessage(to_string(player_.size()));
-  player_stream_[pid].SendMessage(scores_str);
+  player_stream_[pid].SendMsg(to_string(player_.size()));
+  player_stream_[pid].SendMsg(scores_str);
 }
 void ServerGame::CmdGetInit(int pid) {
   player_stream_[pid].ReplyWithOk();
-  player_stream_[pid].SendMessage(to_string(board_size_));
+  player_stream_[pid].SendMsg(to_string(board_size_));
 }
 void ServerGame::CmdGetMyPos(int pid) {
   player_stream_[pid].ReplyWithOk();
   Pos pos = player_[pid].pos();
   string pos_msg = to_string(pos.x()) + " " + to_string(pos.y());
-  player_stream_[pid].SendMessage(pos_msg);
+  player_stream_[pid].SendMsg(pos_msg);
 }
 void ServerGame::CmdGetCandyCount(int pid) {
   player_stream_[pid].ReplyWithOk();
-  player_stream_[pid].SendMessage(
+  player_stream_[pid].SendMsg(
       to_string(board_[player_[pid].pos()].num_candies));
 }
 void ServerGame::CmdEatCandy(int pid) {

@@ -27,15 +27,15 @@ class StreamTcp : public StreamBackendInterface {
   virtual ~StreamTcp() {}
 
   // Non-blocking call to check if there is a message available on the stream.
-  bool MessageAvailable() override;
+  bool MsgAvailable() override;
 
   // Blocking call that receives one line. Returned string does not contain the
   // newline character.
-  std::string GetMessage() override;
+  std::string GetMsg() override;
 
   // Blocking call that sends a message (without newline). Returns true on
   // success.
-  bool SendMessage(const std::string& msg) override;
+  bool SendMsg(const std::string& msg) override;
 
   // Returns if the connection is still valid.
   bool Connected() const override;
@@ -56,7 +56,7 @@ class StreamTcp : public StreamBackendInterface {
   char buffer_[_TCP_BUFFER_SIZE + 1];
   // Part of the last message -- not yet terminated by newline character.
   std::string not_complete_message_;
-  // Queue of all received messages not yet obtained by GetMessage method.
+  // Queue of all received messages not yet obtained by GetMsg method.
   std::queue<std::string> complete_messages_;
 };
 

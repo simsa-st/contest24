@@ -42,10 +42,10 @@ namespace communication {
 //     player_stream.ConnectAgain();
 //   }
 //   if (player_stream.Connected()) {
-//     if (player_stream.MessageAvailable()) {
-//       std::string msg = player_stream.GetMessage();
+//     if (player_stream.MsgAvailable()) {
+//       std::string msg = player_stream.GetMsg();
 //       player_stream.SendOk();
-//       player_stream.SendMessage(ReplyToMsg(msg));
+//       player_stream.SendMsg(ReplyToMsg(msg));
 //     }
 //   }
 // }
@@ -76,20 +76,20 @@ class ServerStream {
   // You should use rather these methods then using GetStream. They only do the
   // requested operation if Connected() is true.
   // Returns true if there is a message available. This is a non-blocking call.
-  bool MessageAvailable();
+  bool MsgAvailable();
   // Blocks until the message is received. If not connected, returns empty string.
-  std::string GetMessage();
+  std::string GetMsg();
   // Wait for the message in a new thread and return the future to recognize
   // when the message was received. Store the message into *msg and notify the
   // condition variable after message is received.
-  std::future<void> GetFutureMessage(std::condition_variable& cv, std::string* msg);
+  std::future<void> GetFutureMsg(std::condition_variable& cv, std::string* msg);
 
   // If connected, sends message over stream and returns if it was sent
   // succesfully. Otherwise returns false.
-  bool SendMessage(const std::string& msg);
-  void ReplyWithOk() { SendMessage("OK"); }
+  bool SendMsg(const std::string& msg);
+  void ReplyWithOk() { SendMsg("OK"); }
   void ReplyWithError(int error_code, const std::string& error_msg) {
-    SendMessage("ERROR " + std::to_string(error_code) + " " + error_msg);
+    SendMsg("ERROR " + std::to_string(error_code) + " " + error_msg);
   }
   void ReplyWithError(const std::pair<int, std::string>& error) {
     ReplyWithError(error.first, error.second);

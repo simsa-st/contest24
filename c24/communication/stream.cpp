@@ -20,23 +20,23 @@ bool Stream::Connected() {
   return stream_backend_->Connected();
 }
 
-bool Stream::MessageAvailable() {
+bool Stream::MsgAvailable() {
   CheckConnectionAndReconnect();
   status_ = Status();
   CHECK(stream_backend_ != nullptr);
-  return stream_backend_->MessageAvailable();
+  return stream_backend_->MsgAvailable();
 }
 
-std::string Stream::GetMessage() {
+std::string Stream::GetMsg() {
   CheckConnectionAndReconnect();
   status_ = Status();
   CHECK(stream_backend_ != nullptr);
-  std::string msg = stream_backend_->GetMessage();
+  std::string msg = stream_backend_->GetMsg();
   LOG(INFO) << "Received: \"" << msg << "\"";
   return msg;
 }
 
-bool Stream::SendMessage(const std::string& msg, bool newline) {
+bool Stream::SendMsg(const std::string& msg, bool newline) {
   CheckConnectionAndReconnect();
   status_ = Status();
   CHECK(stream_backend_ != nullptr);
@@ -44,7 +44,7 @@ bool Stream::SendMessage(const std::string& msg, bool newline) {
   // Received.
   LOG(INFO) << "Sending:  \"" << msg << "\"";
   const std::string& msg_to_send = newline ? msg + '\n' : msg;
-  return stream_backend_->SendMessage(msg_to_send);
+  return stream_backend_->SendMsg(msg_to_send);
 }
 
 Status Stream::LastStatus() const {
@@ -53,8 +53,8 @@ Status Stream::LastStatus() const {
   return stream_backend_->LastStatus();
 }
 
-bool Stream::GetMessageWithCheck(const char* expected) {
-  std::string msg_ok = GetMessage();
+bool Stream::GetMsgWithCheck(const char* expected) {
+  std::string msg_ok = GetMsg();
   if (msg_ok != expected) {
     status_ = stream_backend_->LastStatus();
     std::stringstream ss(msg_ok);
@@ -72,12 +72,12 @@ bool Stream::GetMessageWithCheck(const char* expected) {
   return true;
 }
 
-bool Stream::SendMessageWithCheck(const std::string& msg, bool newline,
-                                  const char* expected) {
+bool Stream::SendMsgWithCheck(const std::string& msg, bool newline,
+                              const char* expected) {
   status_ = Status();
-  bool success = SendMessage(msg, newline);
+  bool success = SendMsg(msg, newline);
   if (success) {
-    success = GetMessageWithCheck(expected);
+    success = GetMsgWithCheck(expected);
   }
   return success;
 }

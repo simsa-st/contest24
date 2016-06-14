@@ -23,8 +23,8 @@ int main(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
   Stream stream(
       std::unique_ptr<StreamBackendInterface>(new StreamTcpServer(FLAGS_port)));
-  std::cout << stream.GetMessage() << std::endl;
-  stream.SendMessage("HELLO CLIENT");
+  std::cout << stream.GetMsg() << std::endl;
+  stream.SendMsg("HELLO CLIENT");
 
   return 0;
 }

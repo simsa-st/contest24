@@ -38,18 +38,18 @@ class GameStream {
   // until one of the messages is not as expected).
   bool Wait() {
     // Send WAIT and check that the server responds with OK, WAITING and OK.
-    if (!stream_.SendMessageWithCheck("WAIT", "OK")) return false;
-    if (!stream_.GetMessageWithCheck("WAITING")) return false;
-    return stream_.GetMessageWithCheck("OK");
+    if (!stream_.SendMsgWithCheck("WAIT", "OK")) return false;
+    if (!stream_.GetMsgWithCheck("WAITING")) return false;
+    return stream_.GetMsgWithCheck("OK");
   }
   // Put here the commands you want to use.
   // bool GetInit(int* n) {
-  //   if (!stream_.SendMessageWithCheck("GET_INIT")) return false;
+  //   if (!stream_.SendMsgWithCheck("GET_INIT")) return false;
   //   *n = stream_.GetVectorOf<int>(1)[0];
   //   return LastStatus().Ok();
   // }
   // bool Move(int x, int y) {
-  //   return stream_.SendMessageWithCheck("MOVE " + to_string(x) + " " +
+  //   return stream_.SendMsgWithCheck("MOVE " + to_string(x) + " " +
   //                                       to_string(y));
   // }
 

@@ -8,7 +8,7 @@
 namespace c24 {
 namespace communication {
 
-bool StreamTcp::MessageAvailable() {
+bool StreamTcp::MsgAvailable() {
   // Check if there is some message in the queue already.
   if (!complete_messages_.empty()) {
     status_ = Status();
@@ -28,7 +28,7 @@ bool StreamTcp::MessageAvailable() {
   return socket_status == sf::TcpSocket::Done;
 }
 
-std::string StreamTcp::GetMessage() {
+std::string StreamTcp::GetMsg() {
   status_ = Status();
   if (complete_messages_.empty()) {
     if (!socket_.isBlocking()) {
@@ -75,7 +75,7 @@ std::string StreamTcp::GetMessage() {
   return msg;
 }
 
-bool StreamTcp::SendMessage(const std::string& msg) {
+bool StreamTcp::SendMsg(const std::string& msg) {
   // Set the socket to blocking mode to guarantee the whole message is sent.
   if (!socket_.isBlocking()) {
     socket_.setBlocking(true);

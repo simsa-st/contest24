@@ -30,14 +30,14 @@ class Stream {
 
   // Non-blocking call that returns if there is a message available on the
   // stream.
-  bool MessageAvailable();
+  bool MsgAvailable();
 
   // Blocking call that receives a message without the newline character.
-  std::string GetMessage();
+  std::string GetMsg();
 
   // Send a message and if 'newline' is true, append newline. Returns true if
   // the message was sent successfully.
-  bool SendMessage(const std::string& msg, bool newline = true);
+  bool SendMsg(const std::string& msg, bool newline = true);
 
   // Return the status of the last operation.
   Status LastStatus() const;
@@ -46,13 +46,13 @@ class Stream {
   // Also, if the received message is not correct, try to extract error from
   // the message. Error is expected to be in the format:
   // ERROR number error_message
-  bool GetMessageWithCheck(const char* expected = "OK");
+  bool GetMsgWithCheck(const char* expected = "OK");
 
   // Send a message, then receive reply and check if it is equal to 'expected'.
   // Returns true if the message was sent succesfully and expected value
   // (without newline) was received.
-  bool SendMessageWithCheck(const std::string& msg, bool newline = true,
-                            const char* expected = "OK");
+  bool SendMsgWithCheck(const std::string& msg, bool newline = true,
+                        const char* expected = "OK");
 
   // Receive a message and extract "cnt" variables of type T from it using
   // stringstream. Also return rest of the message in the second argument if it
@@ -77,7 +77,7 @@ class Stream {
 // Implementation needs to be in the header file because of the template.
 template <typename T>
 std::vector<T> Stream::GetVectorOf(int cnt, std::string* rest_of_msg) {
-  std::string msg = GetMessage();
+  std::string msg = GetMsg();
   std::stringstream sstream(msg);
   std::vector<T> vector_of;
   for (int i = 0; i < cnt; ++i) {

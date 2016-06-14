@@ -34,13 +34,13 @@ bool ServerStream::Disconnected() {
   return !waiting_for_future_stream_ && !Connected();
 }
 
-bool ServerStream::MessageAvailable() {
-  return Connected() && stream_->MessageAvailable();
+bool ServerStream::MsgAvailable() {
+  return Connected() && stream_->MsgAvailable();
 }
 
-std::string ServerStream::GetMessage() {
+std::string ServerStream::GetMsg() {
   if (Connected()) {
-    return stream_->GetMessage();
+    return stream_->GetMsg();
   }
   return "";
 }
@@ -48,16 +48,17 @@ std::string ServerStream::GetMessage() {
 // The message is returned through pointer to string rather than through
 // std::future<std::string> to be sure that the whole message is copied when
 // the condition variable is notified.
-std::future<void> ServerStream::GetFutureMessage(std::condition_variable& cv, std::string* msg) {
+std::future<void> ServerStream::GetFutureMsg(std::condition_variable& cv,
+                                             std::string* msg) {
   return std::async(std::launch::async, [&cv, this, msg] {
-    *msg = GetMessage();
+    *msg = GetMsg();
     cv.notify_one();
   });
 }
 
-bool ServerStream::SendMessage(const std::string& msg) {
+bool ServerStream::SendMsg(const std::string& msg) {
   if (Connected()) {
-    return stream_->SendMessage(msg);
+    return stream_->SendMsg(msg);
   }
   return false;
 }

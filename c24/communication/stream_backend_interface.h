@@ -16,15 +16,15 @@ class StreamBackendInterface {
   virtual ~StreamBackendInterface() {}
 
   // Non-blocking call to check if there is a message available on the stream.
-  virtual bool MessageAvailable() = 0;
+  virtual bool MsgAvailable() = 0;
 
   // Blocking call that receives one line. Returned string does not contain the
   // newline character.
-  virtual std::string GetMessage() = 0;
+  virtual std::string GetMsg() = 0;
 
   // Blocking call that sends a message (without newline). Returns true on
   // success.
-  virtual bool SendMessage(const std::string& msg) = 0;
+  virtual bool SendMsg(const std::string& msg) = 0;
 
   // Returns if the connection is still valid.
   virtual bool Connected() const = 0;
