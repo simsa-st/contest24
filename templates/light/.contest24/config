@@ -1,6 +1,0 @@
-CLIENT_BINARY "/tmp/abc/abc"
-CLIENT_DEFAULT_FLAGS "--vis --toolbar"
-SERVER_BINARY "/tmp/abc/abc_server"
-SERVER_DEFAULT_FLAGS "--vis"
-CLIENT_MEMORY_LIMIT "-1"
-SERVER_MEMORY_LIMIT "-1"
