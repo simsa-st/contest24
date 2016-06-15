@@ -212,7 +212,7 @@ cmd_project_new() {
   CLIENT_BINARY="$project_dir/build/bin/$PROJECT_NAME"
   SERVER_BINARY="$project_dir/build/bin/$PROJECT_NAME""_server"
   log_dir="$project_dir/tmp"
-  change_variable CLIENT_DEFAULT_FLAGS "$CLIENT_DEFAULT_FLAGS --log_dir=$log_dir"
+  # change_variable CLIENT_DEFAULT_FLAGS "$CLIENT_DEFAULT_FLAGS --log_dir=$log_dir"
   store_current_configuration $config_file
 
   if [[ ! -d $project_dir ]] ; then
