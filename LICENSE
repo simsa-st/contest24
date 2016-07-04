@@ -20,3 +20,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+External libraries used by contest24
+-------------------------------
+
+* SFML is under the zlib/png license
+* SFGUI is under the zlib license
+* gflags, see it's license in c24/extern/gflags-master/COPYING.txt
+* Easylogging++ is under the MIT licene
