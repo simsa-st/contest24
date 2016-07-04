@@ -18,7 +18,7 @@ Now copy the script `contest24` to your `bin/` directory so you can use it easil
 
 Now we are ready to start a new project. Go to your favorite directory and run:
 ```bash
-$ c24 project new quick_start new_folder light
+$ contest24 project new quick_start new_folder light
 ```
 This will create a project in folder `new_folder` and copy the code from the template *light*. In this new folder you will also find the copy of the `c24` library and folders `build` and `tmp` for build/temporary files.
 
@@ -125,11 +125,11 @@ void Game::Move() {
 And that's it! If we run the server with visualizer and then our code we should see the player moving according to the promised strategy.
 
 ## More `contest24` script features
-There are few commands for managing your projects. You can list all the project with `c24 project show`, use `c24 project change project_name` to change what project is the active one and `c24 project forget project_name` if you want to delete a project (this just forgets about its existance and configuration, you have to delete the files yourself).
+There are few commands for managing your projects. You can list all the project with `contest24 project show`, use `contest24 project change project_name` to change what project is the active one and `contest24 project forget project_name` if you want to delete a project (this just forgets about its existance and configuration, you have to delete the files yourself).
 
 Now we will look what is the configuration for this project:
 ```bash
-$ c24 config show
+$ contest24 config show
 PROJECT_DIRECTORY "/tmp/new_folder"
 CLIENT_BINARY "/tmp/new_folder/build/bin/quick_start"
 CLIENT_DEFAULT_FLAGS "--logbuflevel=-1 --stderrthreshold=0 --vis --toolbar --log_dir=/tmp/new_folder/tmp"
@@ -141,11 +141,11 @@ SERVER_MEMORY_LIMIT "-1"
 
 Of course, the paths will be different in your case. Lets set CLIENT_BINARY and SERVER_BINARY to the correct paths of the respective binaries. In my case, I would run:
 ```bash
-$ c24 config set CLIENT_BINARY /tmp/new_folder/quick_start
-$ c24 config set SERVER_BINARY /home/gorli/projects/contest24/build/bin/candy_eaters_server
+$ contest24 config set CLIENT_BINARY /tmp/new_folder/quick_start
+$ contest24 config set SERVER_BINARY /home/gorli/projects/contest24/build/bin/candy_eaters_server
 ```
 You can also change the default flags for the client and server. Now you can run the server/client with:
 ```bash
-$ c24 server 5500
-$ c24 client --port=5500
+$ contest24 server 5500
+$ contest24 client --port=5500
 ```
