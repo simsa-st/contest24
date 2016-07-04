@@ -39,8 +39,8 @@ still running) `examples_tcp_client` -- these programs should send
 each other a message over TCP. You can also try the Candy Eaters example with
 the visualizer by running:
 ```bash
-$ ./candy_eaters_server --ports=5500,5600 --visualizer
-$ ./candy_eaters --port=5500 --visualizer --toolbar
+$ ./candy_eaters_server --ports=5500,5600 --vis
+$ ./candy_eaters --port=5500 --vis --toolbar
 ```
 
 *Notice: In-source build is disabled (i.e. running `cmake .` in the
